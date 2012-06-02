@@ -23,13 +23,28 @@
     id array[10];
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+static void PrintLayout(unsigned *layout)
 {
-    unsigned *layout = CalculateClassStrongLayout([self class]);
     NSMutableArray *strings = [NSMutableArray array];
     for(int i = 0; layout[i]; i++)
         [strings addObject: [NSString stringWithFormat: @"%u", layout[i]]];
-    NSLog(@"Class %@ has strong references at (%@)", [self class], [strings componentsJoinedByString: @", "]);
+    NSLog(@"Strong references at (%@)", [strings componentsJoinedByString: @", "]);
+}
+
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+    unsigned *layout = CalculateClassStrongLayout([self class]);
+    NSLog(@"MAAppDelegate");
+    PrintLayout(layout);
+    
+    __weak id weakSelf = self;
+    void (^block)(void) = ^{
+        NSLog(@"%@ %@ %p %@", self, aNotification, layout, weakSelf);
+    };
+    block = [block copy];
+    layout = CalculateBlockStrongLayout((__bridge void *)block);
+    NSLog(@"Block");
+    PrintLayout(layout);
 }
 
 @end

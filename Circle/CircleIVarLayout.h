@@ -10,3 +10,4 @@
 
 
 unsigned *CalculateClassStrongLayout(Class c);
+unsigned *CalculateBlockStrongLayout(void *block);

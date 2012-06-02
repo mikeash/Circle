@@ -11,6 +11,31 @@
 #import <objc/runtime.h>
 
 
+struct BlockDescriptor
+{
+    unsigned long reserved;
+    unsigned long size;
+    void *rest[1];
+};
+
+struct Block
+{
+    void *isa;
+    int flags;
+    int reserved;
+    void *invoke;
+    struct BlockDescriptor *descriptor;
+};
+
+enum {
+    BLOCK_HAS_COPY_DISPOSE =  (1 << 25),
+    BLOCK_HAS_CTOR =          (1 << 26), // helpers have C++ code
+    BLOCK_IS_GLOBAL =         (1 << 28),
+    BLOCK_HAS_STRET =         (1 << 29), // IFF BLOCK_HAS_SIGNATURE
+    BLOCK_HAS_SIGNATURE =     (1 << 30), 
+};
+
+
 @interface _CircleReleaseDetector : NSObject {
     BOOL _didRelease;
 }
@@ -42,21 +67,18 @@ static BOOL DidRelease(void *obj) {
 
 @end
 
-unsigned *CalculateClassStrongLayout(Class c)
+static unsigned *CalculateStrongLayout(void *isa, size_t objSize, void(^destruct)(void *fakeObj))
 {
-    SEL destructorSEL = sel_getUid(".cxx_destruct");
-    
     size_t ptrSize = sizeof(void *);
-    size_t elements = (class_getInstanceSize(c) + ptrSize - 1) / ptrSize;
+    size_t elements = (objSize + ptrSize - 1) / ptrSize;
     void *obj[elements];
     void *detectors[elements];
-    obj[0] = (__bridge void *)c;
+    obj[0] = isa;
     for (size_t i = 0; i < elements; i++)
         detectors[i] = obj[i] = [_CircleReleaseDetector make];
     
-    void (*Destruct)(void *, SEL) = (__typeof__(Destruct))class_getMethodImplementation(c, destructorSEL);
-    Destruct(obj, destructorSEL);
-    
+    destruct(obj);
+
     unsigned *layout = malloc(sizeof(unsigned) * elements);
     int cursor = 0;
     
@@ -69,3 +91,32 @@ unsigned *CalculateClassStrongLayout(Class c)
     
     return layout;
 }
+
+unsigned *CalculateClassStrongLayout(Class c)
+{
+    SEL destructorSEL = sel_getUid(".cxx_destruct");
+    
+    void (*Destruct)(void *, SEL) = (__typeof__(Destruct))class_getMethodImplementation(c, destructorSEL);
+    return CalculateStrongLayout((__bridge void *)c, class_getInstanceSize(c), ^(void *fakeObj) {
+        Destruct(fakeObj, destructorSEL);
+    });
+}
+
+unsigned *CalculateBlockStrongLayout(void *block)
+{
+    struct Block *realBlock = block;
+    if(!(realBlock->flags & BLOCK_HAS_COPY_DISPOSE))
+        return calloc(sizeof(unsigned), 1);
+    
+    if(realBlock->flags & BLOCK_IS_GLOBAL)
+        return calloc(sizeof(unsigned), 1);
+    
+    struct BlockDescriptor *descriptor = realBlock->descriptor;
+    
+    void (*dispose_helper)(void *src) = descriptor->rest[1];
+    
+    return CalculateStrongLayout(realBlock->isa, descriptor->size, ^(void *fakeObj) {
+        dispose_helper(fakeObj);
+    });
+}
+
