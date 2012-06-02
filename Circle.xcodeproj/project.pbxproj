@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C23AF6EE1579162000D2DF2E /* CircleIVarLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = C23AF6ED1579162000D2DF2E /* CircleIVarLayout.m */; };
 		C2A7A1AA154F50D200940C81 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2A7A1A9154F50D200940C81 /* Cocoa.framework */; };
 		C2A7A1B4154F50D200940C81 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C2A7A1B2154F50D200940C81 /* InfoPlist.strings */; };
 		C2A7A1B6154F50D200940C81 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C2A7A1B5154F50D200940C81 /* main.m */; };
@@ -30,24 +31,26 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C23AF6EC1579162000D2DF2E /* CircleIVarLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CircleIVarLayout.h; sourceTree = "<group>"; };
+		C23AF6ED1579162000D2DF2E /* CircleIVarLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CircleIVarLayout.m; sourceTree = "<group>"; };
 		C2A7A1A5154F50D200940C81 /* Circle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Circle.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2A7A1A9154F50D200940C81 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		C2A7A1AC154F50D200940C81 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		C2A7A1AD154F50D200940C81 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		C2A7A1AE154F50D200940C81 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		C2A7A1B1154F50D200940C81 /* Circle-Info.plist */ = {isa = PBXFileReference; path = "Circle-Info.plist"; sourceTree = "<group>"; };
+		C2A7A1B1154F50D200940C81 /* Circle-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Circle-Info.plist"; sourceTree = "<group>"; };
 		C2A7A1B3154F50D200940C81 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C2A7A1B5154F50D200940C81 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		C2A7A1B7154F50D200940C81 /* Circle-Prefix.pch */ = {isa = PBXFileReference; path = "Circle-Prefix.pch"; sourceTree = "<group>"; };
+		C2A7A1B7154F50D200940C81 /* Circle-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Circle-Prefix.pch"; sourceTree = "<group>"; };
 		C2A7A1B9154F50D200940C81 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		C2A7A1BB154F50D200940C81 /* MAAppDelegate.h */ = {isa = PBXFileReference; path = MAAppDelegate.h; sourceTree = "<group>"; };
+		C2A7A1BB154F50D200940C81 /* MAAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MAAppDelegate.h; sourceTree = "<group>"; };
 		C2A7A1BC154F50D200940C81 /* MAAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MAAppDelegate.m; sourceTree = "<group>"; };
 		C2A7A1BF154F50D300940C81 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		C2A7A1C6154F50D300940C81 /* CircleTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CircleTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2A7A1C7154F50D300940C81 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
-		C2A7A1CE154F50D300940C81 /* CircleTests-Info.plist */ = {isa = PBXFileReference; path = "CircleTests-Info.plist"; sourceTree = "<group>"; };
+		C2A7A1CE154F50D300940C81 /* CircleTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CircleTests-Info.plist"; sourceTree = "<group>"; };
 		C2A7A1D0154F50D300940C81 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		C2A7A1D2154F50D300940C81 /* CircleTests.h */ = {isa = PBXFileReference; path = CircleTests.h; sourceTree = "<group>"; };
+		C2A7A1D2154F50D300940C81 /* CircleTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CircleTests.h; sourceTree = "<group>"; };
 		C2A7A1D3154F50D300940C81 /* CircleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CircleTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -116,6 +119,8 @@
 			children = (
 				C2A7A1BB154F50D200940C81 /* MAAppDelegate.h */,
 				C2A7A1BC154F50D200940C81 /* MAAppDelegate.m */,
+				C23AF6EC1579162000D2DF2E /* CircleIVarLayout.h */,
+				C23AF6ED1579162000D2DF2E /* CircleIVarLayout.m */,
 				C2A7A1BE154F50D300940C81 /* MainMenu.xib */,
 				C2A7A1B0154F50D200940C81 /* Supporting Files */,
 			);
@@ -264,6 +269,7 @@
 			files = (
 				C2A7A1B6154F50D200940C81 /* main.m in Sources */,
 				C2A7A1BD154F50D200940C81 /* MAAppDelegate.m in Sources */,
+				C23AF6EE1579162000D2DF2E /* CircleIVarLayout.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -441,6 +447,7 @@
 				C2A7A1D9154F50D300940C81 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C2A7A1DA154F50D300940C81 /* Build configuration list for PBXNativeTarget "CircleTests" */ = {
 			isa = XCConfigurationList;
@@ -449,6 +456,7 @@
 				C2A7A1DC154F50D300940C81 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
