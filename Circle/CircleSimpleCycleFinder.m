@@ -11,6 +11,15 @@
 #import "CircleIVarLayout.h"
 
 
+#define DEBUG_LOG 0
+
+#if DEBUG_LOG
+#define LOG(...) NSLog(__VA_ARGS__)
+#else
+#define LOG(...) (void)0
+#endif
+
+
 @interface _CircleObjectInfo : NSObject
 
 @property CFMutableSetRef incomingReferences;
@@ -51,7 +60,7 @@ void CircleSimpleSearchCycle(id obj)
         void **candidate = (void **)CFArrayGetValueAtIndex(toSearchObjs, count - 1);
         CFArrayRemoveValueAtIndex(toSearchObjs, count - 1);
         
-        NSLog(@"Scanning candidate %p, retain count %lu", candidate, CFGetRetainCount((CFTypeRef)candidate));
+        LOG(@"Scanning candidate %p, retain count %lu", candidate, CFGetRetainCount((CFTypeRef)candidate));
         
         unsigned *layout = GetStrongLayout(candidate);
         for(int i = 0; layout[i]; i++)
@@ -77,7 +86,7 @@ void CircleSimpleSearchCycle(id obj)
     _CircleObjectInfo *info = (__bridge _CircleObjectInfo *)CFDictionaryGetValue(searchedObjs, (__bridge void *)obj);
     CFSetRef incomingReferences = [info incomingReferences];
     NSUInteger retainCount = CFGetRetainCount((__bridge CFTypeRef)obj);
-    NSLog(@"%@ retain count is %lu, scanned incoming references are %@", obj, retainCount, CFBridgingRelease(CFCopyDescription(incomingReferences)));
+    LOG(@"%@ retain count is %lu, scanned incoming references are %@", obj, retainCount, CFBridgingRelease(CFCopyDescription(incomingReferences)));
     
     CFArrayRemoveAllValues(toSearchObjs);
     CFArrayAppendValue(toSearchObjs, (__bridge void*)obj);
@@ -120,7 +129,7 @@ void CircleSimpleSearchCycle(id obj)
         }
     }
     
-    NSLog(@"foundExternallyRetained is %d", foundExternallyRetained);
+    LOG(@"foundExternallyRetained is %d", foundExternallyRetained);
     
     if(!foundExternallyRetained)
     {
@@ -132,7 +141,7 @@ void CircleSimpleSearchCycle(id obj)
         {
             void **reference = (void **)locations[i];
             void *target = *reference;
-            NSLog(@"Zeroing reference %p to %p", reference, target);
+            LOG(@"Zeroing reference %p to %p", reference, target);
             *reference = NULL;
             CFRelease(target);
         }
