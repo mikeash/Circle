@@ -9,4 +9,11 @@
 #import <Foundation/Foundation.h>
 
 
-void CircleSimpleSearchCycle(id obj);
+struct CircleSearchResults
+{
+    BOOL isUnclaimedCycle;
+    CFSetRef incomingReferences;
+};
+
+struct CircleSearchResults CircleSimpleSearchCycle(id obj);
+void CircleZeroReferences(CFSetRef references);

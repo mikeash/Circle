@@ -43,7 +43,7 @@
 
 @end
 
-void CircleSimpleSearchCycle(id obj)
+static CFDictionaryRef CopyInfosForReferents(id obj)
 {
     CFMutableDictionaryRef searchedObjs = CFDictionaryCreateMutable(NULL, 0, NULL, &kCFTypeDictionaryValueCallBacks);
     CFMutableArrayRef toSearchObjs = CFArrayCreateMutable(NULL, 0, NULL);
@@ -78,26 +78,35 @@ void CircleSimpleSearchCycle(id obj)
             }
         }
     }
+    CFRelease(toSearchObjs);
     
-    _CircleObjectInfo *info = (__bridge _CircleObjectInfo *)CFDictionaryGetValue(searchedObjs, (__bridge void *)obj);
+    return searchedObjs;
+}
+
+struct CircleSearchResults CircleSimpleSearchCycle(id obj)
+{
+    CFDictionaryRef infos = CopyInfosForReferents(obj);
+    
+    _CircleObjectInfo *info = (__bridge _CircleObjectInfo *)CFDictionaryGetValue(infos, (__bridge void *)obj);
     CFSetRef incomingReferences = [info incomingReferences];
     NSUInteger retainCount = CFGetRetainCount((__bridge CFTypeRef)obj);
     LOG(@"%@ retain count is %lu, scanned incoming references are %@", obj, retainCount, CFBridgingRelease(CFCopyDescription(incomingReferences)));
     
-    CFArrayRemoveAllValues(toSearchObjs);
+    CFMutableArrayRef toSearchObjs = CFArrayCreateMutable(NULL, 0, NULL);
     CFArrayAppendValue(toSearchObjs, (__bridge void*)obj);
     
     CFMutableSetRef didSearchObjs = CFSetCreateMutable(NULL, 0, NULL);
     
     BOOL foundExternallyRetained = NO;
     
+    CFIndex count;
     while((count = CFArrayGetCount(toSearchObjs)) > 0)
     {
         void *cycleObj = (void *)CFArrayGetValueAtIndex(toSearchObjs, count - 1);
         CFArrayRemoveValueAtIndex(toSearchObjs, count - 1);
         CFSetAddValue(didSearchObjs, cycleObj);
         
-        _CircleObjectInfo *info = (__bridge _CircleObjectInfo *)CFDictionaryGetValue(searchedObjs, cycleObj);
+        _CircleObjectInfo *info = (__bridge _CircleObjectInfo *)CFDictionaryGetValue(infos, cycleObj);
         CFSetRef referencesCF = [info incomingReferences];
         CFIndex referencesCount = CFSetGetCount(referencesCF);
         
@@ -127,19 +136,29 @@ void CircleSimpleSearchCycle(id obj)
     
     LOG(@"foundExternallyRetained is %d", foundExternallyRetained);
     
-    if(!foundExternallyRetained)
+    struct CircleSearchResults results;
+    results.isUnclaimedCycle = !foundExternallyRetained;
+    results.incomingReferences = CFRetain(incomingReferences);
+    
+    CFRelease(infos);
+    CFRelease(toSearchObjs);
+    CFRelease(didSearchObjs);
+    
+    return results;
+}
+
+void CircleZeroReferences(CFSetRef references)
+{
+    NSUInteger incomingReferencesCount = CFSetGetCount(references);
+    
+    const void *locations[incomingReferencesCount];
+    CFSetGetValues(references, locations);
+    for(unsigned i = 0; i < incomingReferencesCount; i++)
     {
-        NSUInteger incomingReferencesCount = CFSetGetCount(incomingReferences);
-        
-        const void *locations[incomingReferencesCount];
-        CFSetGetValues(incomingReferences, locations);
-        for(unsigned i = 0; i < incomingReferencesCount; i++)
-        {
-            void **reference = (void **)locations[i];
-            void *target = *reference;
-            LOG(@"Zeroing reference %p to %p", reference, target);
-            *reference = NULL;
-            CFRelease(target);
-        }
+        void **reference = (void **)locations[i];
+        void *target = *reference;
+        LOG(@"Zeroing reference %p to %p", reference, target);
+        *reference = NULL;
+        CFRelease(target);
     }
 }

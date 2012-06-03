@@ -88,7 +88,10 @@ static void PrintLayout(id obj)
             [c setPtr: a];
             weakObj = a;
         }
-        CircleSimpleSearchCycle(weakObj);
+        struct CircleSearchResults results = CircleSimpleSearchCycle(weakObj);
+        if(results.isUnclaimedCycle)
+            CircleZeroReferences(results.incomingReferences);
+        CFRelease(results.incomingReferences);
     }
     NSLog(@"After collecting, weak object is %@", weakObj);
           
@@ -105,11 +108,14 @@ static void PrintLayout(id obj)
             weakObj = a;
             
             self->strong = b;
-            NSLog(@"Before collecting, chaining gives", [self->strong ptr]);
+            NSLog(@"Before collecting, chaining gives %@", [self->strong ptr]);
         }
-        CircleSimpleSearchCycle(weakObj);
+        struct CircleSearchResults results = CircleSimpleSearchCycle(weakObj);
+        if(results.isUnclaimedCycle)
+            CircleZeroReferences(results.incomingReferences);
+        CFRelease(results.incomingReferences);
     }
-    NSLog(@"After collecting, chaining gives", [self->strong ptr]);
+    NSLog(@"After collecting, chaining gives %@", [self->strong ptr]);
     NSLog(@"After collecting, weak object is %@", weakObj);
 }
 
