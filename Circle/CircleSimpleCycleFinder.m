@@ -162,3 +162,63 @@ void CircleZeroReferences(CFSetRef references)
         CFRelease(target);
     }
 }
+
+@interface _CircleWeakRef : NSObject
+@property (weak) id obj;
+@end
+@implementation _CircleWeakRef
+@end
+
+@implementation CircleSimpleCycleFinder {
+    NSMutableArray *_weakRefs;
+}
+
+- (id)init
+{
+    if((self = [super init]))
+    {
+        _weakRefs = [NSMutableArray array];
+    }
+    return self;
+}
+
+- (void)addCandidate: (id)obj
+{
+    _CircleWeakRef *ref = [[_CircleWeakRef alloc] init];
+    [ref setObj: obj];
+    [_weakRefs addObject: ref];
+}
+
+- (void)collect
+{
+    NSMutableIndexSet *zeroedIndices;
+    
+    NSUInteger index = 0;
+    for(_CircleWeakRef *ref in _weakRefs)
+    {
+        id obj;
+        @autoreleasepool {
+            obj = [ref obj];
+        }
+        if(obj)
+        {
+            struct CircleSearchResults results = CircleSimpleSearchCycle(obj);
+            if(results.isUnclaimedCycle)
+                CircleZeroReferences(results.incomingReferences);
+            CFRelease(results.incomingReferences);
+        }
+        else
+        {
+            if(!zeroedIndices)
+                zeroedIndices = [NSMutableIndexSet indexSet];
+            [zeroedIndices addIndex: index];
+        }
+        index++;
+    }
+    
+    if(zeroedIndices)
+        [_weakRefs removeObjectsAtIndexes: zeroedIndices];
+}
+
+@end
+

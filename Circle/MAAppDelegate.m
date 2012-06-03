@@ -75,48 +75,42 @@ static void PrintLayout(id obj)
     block = [block copy];
     PrintLayout(block);
     
-    __weak id weakObj;
+    __weak id weakObj1;
+    __weak id weakObj2;
+    CircleSimpleCycleFinder *collector = [[CircleSimpleCycleFinder alloc] init];
     @autoreleasepool {
-        @autoreleasepool {
-            TestClass *a = [[TestClass alloc] init];
-            TestClass *b = [[TestClass alloc] init];
-            TestClass *c = [[TestClass alloc] init];
-            [a setPtr: b];
-            [a setPtr2: c];
-            [b setPtr: a];
-            [b setPtr2: self];
-            [c setPtr: a];
-            weakObj = a;
-        }
-        struct CircleSearchResults results = CircleSimpleSearchCycle(weakObj);
-        if(results.isUnclaimedCycle)
-            CircleZeroReferences(results.incomingReferences);
-        CFRelease(results.incomingReferences);
+        TestClass *a = [[TestClass alloc] init];
+        TestClass *b = [[TestClass alloc] init];
+        TestClass *c = [[TestClass alloc] init];
+        [a setPtr: b];
+        [a setPtr2: c];
+        [b setPtr: a];
+        [b setPtr2: self];
+        [c setPtr: a];
+        weakObj1 = a;
+        [collector addCandidate: a];
     }
-    NSLog(@"After collecting, weak object is %@", weakObj);
-          
     @autoreleasepool {
-        @autoreleasepool {
-            TestClass *a = [[TestClass alloc] init];
-            TestClass *b = [[TestClass alloc] init];
-            TestClass *c = [[TestClass alloc] init];
-            [a setPtr: b];
-            [a setPtr2: c];
-            [b setPtr: a];
-            [b setPtr2: self];
-            [c setPtr: a];
-            weakObj = a;
-            
-            self->strong = b;
-            NSLog(@"Before collecting, chaining gives %@", [self->strong ptr]);
-        }
-        struct CircleSearchResults results = CircleSimpleSearchCycle(weakObj);
-        if(results.isUnclaimedCycle)
-            CircleZeroReferences(results.incomingReferences);
-        CFRelease(results.incomingReferences);
+        TestClass *a = [[TestClass alloc] init];
+        TestClass *b = [[TestClass alloc] init];
+        TestClass *c = [[TestClass alloc] init];
+        [a setPtr: b];
+        [a setPtr2: c];
+        [b setPtr: a];
+        [b setPtr2: self];
+        [c setPtr: a];
+        weakObj2 = a;
+        
+        self->strong = b;
+        NSLog(@"Before collecting, chaining gives %@", [self->strong ptr]);
+        
+        [collector addCandidate: a];
     }
+    @autoreleasepool {
+        [collector collect];
+    }
+    NSLog(@"After collecting, weak objects are %@ %@", weakObj1, weakObj2);
     NSLog(@"After collecting, chaining gives %@", [self->strong ptr]);
-    NSLog(@"After collecting, weak object is %@", weakObj);
 }
 
 @end

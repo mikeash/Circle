@@ -17,3 +17,10 @@ struct CircleSearchResults
 
 struct CircleSearchResults CircleSimpleSearchCycle(id obj);
 void CircleZeroReferences(CFSetRef references);
+
+@interface CircleSimpleCycleFinder : NSObject
+
+- (void)addCandidate: (id)obj;
+- (void)collect;
+
+@end
