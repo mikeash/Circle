@@ -9,9 +9,41 @@
 #import "MAAppDelegate.h"
 
 #import <dlfcn.h>
+#import <objc/runtime.h>
 
 #import "CircleIVarLayout.h"
+#import "CircleSimpleCycleFinder.h"
 
+
+@interface TestClass : NSObject
+@property (strong) id ptr;
+@property (strong) id ptr2;
+@end
+@implementation TestClass
+
++ (void)initialize {
+    Method m = class_getInstanceMethod(self, @selector(retain_toSwizzle));
+    class_addMethod(self, sel_getUid("retain"), method_getImplementation(m), method_getTypeEncoding(m));
+}
+
++ (void *)make {
+    void *obj = calloc(class_getInstanceSize(self), 1);
+    object_setClass((__bridge id)obj, self);
+    return obj;
+}
+
+- (void)retain_toSwizzle {
+    //NSLog(@"Retaining %p at %@", self, [NSThread callStackSymbols]);
+    void (*retain)(id, SEL) = (__typeof__(retain))[[TestClass superclass] instanceMethodForSelector: sel_getUid("retain")];
+    retain(self, sel_getUid("retain"));
+}
+
+- (void)dealloc
+{
+    NSLog(@"%@ deallocating", self);
+}
+
+@end
 
 @implementation MAAppDelegate {
     id strong;
@@ -45,6 +77,20 @@ static void PrintLayout(unsigned *layout)
     layout = GetStrongLayout((__bridge void *)block);
     NSLog(@"Block");
     PrintLayout(layout);
+    
+    __weak id weakObj;
+    @autoreleasepool {
+        TestClass *a = [[TestClass alloc] init];
+        TestClass *b = [[TestClass alloc] init];
+        TestClass *c = [[TestClass alloc] init];
+        [a setPtr: b];
+        [a setPtr2: c];
+        [b setPtr: a];
+        [b setPtr2: self];
+        [c setPtr: a];
+        weakObj = a;
+    }
+    CircleSimpleSearchCycle(weakObj);
 }
 
 @end

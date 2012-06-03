@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C20335DE157BDEC9003A6733 /* CircleSimpleCycleFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = C20335DD157BDEC9003A6733 /* CircleSimpleCycleFinder.m */; };
 		C23AF6EE1579162000D2DF2E /* CircleIVarLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = C23AF6ED1579162000D2DF2E /* CircleIVarLayout.m */; };
 		C2A7A1AA154F50D200940C81 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2A7A1A9154F50D200940C81 /* Cocoa.framework */; };
 		C2A7A1B4154F50D200940C81 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C2A7A1B2154F50D200940C81 /* InfoPlist.strings */; };
@@ -31,6 +32,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C20335DC157BDEC9003A6733 /* CircleSimpleCycleFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CircleSimpleCycleFinder.h; sourceTree = "<group>"; };
+		C20335DD157BDEC9003A6733 /* CircleSimpleCycleFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CircleSimpleCycleFinder.m; sourceTree = "<group>"; };
 		C23AF6EC1579162000D2DF2E /* CircleIVarLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CircleIVarLayout.h; sourceTree = "<group>"; };
 		C23AF6ED1579162000D2DF2E /* CircleIVarLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CircleIVarLayout.m; sourceTree = "<group>"; };
 		C2A7A1A5154F50D200940C81 /* Circle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Circle.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -121,6 +124,8 @@
 				C2A7A1BC154F50D200940C81 /* MAAppDelegate.m */,
 				C23AF6EC1579162000D2DF2E /* CircleIVarLayout.h */,
 				C23AF6ED1579162000D2DF2E /* CircleIVarLayout.m */,
+				C20335DC157BDEC9003A6733 /* CircleSimpleCycleFinder.h */,
+				C20335DD157BDEC9003A6733 /* CircleSimpleCycleFinder.m */,
 				C2A7A1BE154F50D300940C81 /* MainMenu.xib */,
 				C2A7A1B0154F50D200940C81 /* Supporting Files */,
 			);
@@ -270,6 +275,7 @@
 				C2A7A1B6154F50D200940C81 /* main.m in Sources */,
 				C2A7A1BD154F50D200940C81 /* MAAppDelegate.m in Sources */,
 				C23AF6EE1579162000D2DF2E /* CircleIVarLayout.m in Sources */,
+				C20335DE157BDEC9003A6733 /* CircleSimpleCycleFinder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
