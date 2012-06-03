@@ -67,6 +67,16 @@ static BOOL DidRelease(void *obj) {
 
 @end
 
+static BOOL IsBlock(void *obj)
+{
+    Class blockClass = [[^{ NSLog(@"%p", obj); } copy] class];
+    while(class_getSuperclass(blockClass) && class_getSuperclass(blockClass) != [NSObject class])
+        blockClass = class_getSuperclass(blockClass);
+    
+    Class candidate = object_getClass((__bridge id)obj);
+    return [candidate isSubclassOfClass: blockClass];
+}
+
 static unsigned *CalculateStrongLayout(void *isa, size_t objSize, void(^destruct)(void *fakeObj))
 {
     size_t ptrSize = sizeof(void *);
@@ -120,3 +130,7 @@ unsigned *CalculateBlockStrongLayout(void *block)
     });
 }
 
+unsigned *GetStrongLayout(void *obj)
+{
+    return IsBlock(obj) ? CalculateBlockStrongLayout(obj) : CalculateClassStrongLayout(object_getClass((__bridge id)obj));
+}

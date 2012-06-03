@@ -11,3 +11,5 @@
 
 unsigned *CalculateClassStrongLayout(Class c);
 unsigned *CalculateBlockStrongLayout(void *block);
+
+unsigned *GetStrongLayout(void *obj);

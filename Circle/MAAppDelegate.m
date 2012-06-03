@@ -35,14 +35,14 @@ static void PrintLayout(unsigned *layout)
 {
     unsigned *layout = CalculateClassStrongLayout([self class]);
     NSLog(@"MAAppDelegate");
-    PrintLayout(layout);
+    PrintLayout(GetStrongLayout((__bridge void *)self));
     
     __weak id weakSelf = self;
     void (^block)(void) = ^{
         NSLog(@"%@ %@ %p %@", self, aNotification, layout, weakSelf);
     };
     block = [block copy];
-    layout = CalculateBlockStrongLayout((__bridge void *)block);
+    layout = GetStrongLayout((__bridge void *)block);
     NSLog(@"Block");
     PrintLayout(layout);
 }
