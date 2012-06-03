@@ -87,7 +87,7 @@ void CircleSimpleSearchCycle(id obj)
     NSUInteger incomingReferencesCount = CFArrayGetCount(incomingReferences);
     if(retainCount == incomingReferencesCount + 2)
     {
-        NSLog(@"Accounted for all strong references to %@, breaking the cycle", obj);
+        NSLog(@"All strong references to %@ are cyclical, breaking the cycle", obj);
         CFArrayApplyFunction(incomingReferences, CFRangeMake(0, incomingReferencesCount), ZeroIncomingReference, NULL);
     }
 }
