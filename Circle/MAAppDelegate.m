@@ -77,6 +77,7 @@ static void PrintLayout(id obj)
     
     __weak id weakObj1;
     __weak id weakObj2;
+    __weak id weakObj3;
     CircleSimpleCycleFinder *collector = [[CircleSimpleCycleFinder alloc] init];
     @autoreleasepool {
         TestClass *a = [[TestClass alloc] init];
@@ -107,9 +108,15 @@ static void PrintLayout(id obj)
         [collector addCandidate: a];
     }
     @autoreleasepool {
+        TestClass *a = [[TestClass alloc] init];
+        [a setPtr: [^{ NSLog(@"%@", a); } copy]];
+        weakObj3 = a;
+        [collector addCandidate: a];
+    }
+    @autoreleasepool {
         [collector collect];
     }
-    NSLog(@"After collecting, weak objects are %@ %@", weakObj1, weakObj2);
+    NSLog(@"After collecting, weak objects are %@ %@ %@", weakObj1, weakObj2, weakObj3);
     NSLog(@"After collecting, chaining gives %@", [self->strong ptr]);
 }
 
