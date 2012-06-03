@@ -13,7 +13,8 @@
 
 @interface _CircleObjectInfo : NSObject
 
-@property CFMutableArrayRef incomingReferences;
+@property CFMutableSetRef incomingReferences;
+@property CFMutableSetRef referringObjects;
 
 @end
 
@@ -23,7 +24,8 @@
 {
     if((self = [super init]))
     {
-        _incomingReferences = CFArrayCreateMutable(NULL, 0, NULL);
+        _incomingReferences = CFSetCreateMutable(NULL, 0, NULL);
+        _referringObjects = CFSetCreateMutable(NULL, 0, NULL);
     }
     return self;
 }
@@ -31,18 +33,10 @@
 - (void)dealloc
 {
     CFRelease(_incomingReferences);
+    CFRelease(_referringObjects);
 }
 
 @end
-
-static void ZeroIncomingReference(const void *value, void *context)
-{
-    void **reference = (void **)value;
-    void *target = *reference;
-    NSLog(@"Zeroing reference %p to %p", reference, target);
-    *reference = NULL;
-    CFRelease(target);
-}
 
 void CircleSimpleSearchCycle(id obj)
 {
@@ -74,20 +68,73 @@ void CircleSimpleSearchCycle(id obj)
                     CFArrayAppendValue(toSearchObjs, target);
                 }
                 
-                CFArrayAppendValue([info incomingReferences], reference);
+                CFSetAddValue([info incomingReferences], reference);
+                CFSetAddValue([info referringObjects], candidate);
             }
         }
     }
     
     _CircleObjectInfo *info = (__bridge _CircleObjectInfo *)CFDictionaryGetValue(searchedObjs, (__bridge void *)obj);
-    CFMutableArrayRef incomingReferences = [info incomingReferences];
+    CFSetRef incomingReferences = [info incomingReferences];
     NSUInteger retainCount = CFGetRetainCount((__bridge CFTypeRef)obj);
     NSLog(@"%@ retain count is %lu, scanned incoming references are %@", obj, retainCount, CFBridgingRelease(CFCopyDescription(incomingReferences)));
     
-    NSUInteger incomingReferencesCount = CFArrayGetCount(incomingReferences);
-    if(retainCount == incomingReferencesCount + 2)
+    CFArrayRemoveAllValues(toSearchObjs);
+    CFArrayAppendValue(toSearchObjs, (__bridge void*)obj);
+    
+    CFMutableSetRef didSearchObjs = CFSetCreateMutable(NULL, 0, NULL);
+    
+    BOOL foundExternallyRetained = NO;
+    
+    while((count = CFArrayGetCount(toSearchObjs)) > 0)
     {
-        NSLog(@"All strong references to %@ are cyclical, breaking the cycle", obj);
-        CFArrayApplyFunction(incomingReferences, CFRangeMake(0, incomingReferencesCount), ZeroIncomingReference, NULL);
+        void *cycleObj = (void *)CFArrayGetValueAtIndex(toSearchObjs, count - 1);
+        CFArrayRemoveValueAtIndex(toSearchObjs, count - 1);
+        CFSetAddValue(didSearchObjs, cycleObj);
+        
+        _CircleObjectInfo *info = (__bridge _CircleObjectInfo *)CFDictionaryGetValue(searchedObjs, cycleObj);
+        CFSetRef referencesCF = [info incomingReferences];
+        CFIndex referencesCount = CFSetGetCount(referencesCF);
+        
+        CFIndex retainCount = CFGetRetainCount(cycleObj);
+        if(cycleObj == (__bridge void *)obj)
+            retainCount -= 2;
+        
+        
+        if(retainCount != referencesCount)
+        {
+            foundExternallyRetained = YES;
+            break;
+        }
+        
+        CFSetRef referringObjectsCF = [info referringObjects];
+        CFIndex referringObjectsCount = CFSetGetCount(referringObjectsCF);
+        const void* referringObjects[referringObjectsCount];
+        CFSetGetValues(referringObjectsCF, referringObjects);
+        
+        for(unsigned i = 0; i < referringObjectsCount; i++)
+        {
+            const void *referrer = referringObjects[i];
+            if(!CFSetContainsValue(didSearchObjs, referrer))
+               CFArrayAppendValue(toSearchObjs, referrer);
+        }
+    }
+    
+    NSLog(@"foundExternallyRetained is %d", foundExternallyRetained);
+    
+    if(!foundExternallyRetained)
+    {
+        NSUInteger incomingReferencesCount = CFSetGetCount(incomingReferences);
+        
+        const void *locations[incomingReferencesCount];
+        CFSetGetValues(incomingReferences, locations);
+        for(unsigned i = 0; i < incomingReferencesCount; i++)
+        {
+            void **reference = (void **)locations[i];
+            void *target = *reference;
+            NSLog(@"Zeroing reference %p to %p", reference, target);
+            *reference = NULL;
+            CFRelease(target);
+        }
     }
 }
