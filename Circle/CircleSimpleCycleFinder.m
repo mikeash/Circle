@@ -13,11 +13,7 @@
 
 #define DEBUG_LOG 0
 
-#if DEBUG_LOG
-#define LOG(...) NSLog(__VA_ARGS__)
-#else
-#define LOG(...) (void)0
-#endif
+#define LOG(...) do { if(DEBUG_LOG) NSLog(__VA_ARGS__); } while(0)
 
 
 @interface _CircleObjectInfo : NSObject
