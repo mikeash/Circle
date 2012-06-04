@@ -140,4 +140,14 @@
     STAssertNotNil(weakObj, @"Collector collected a referenced cycle");
 }
 
+- (void)testNSObject
+{
+    CircleSimpleCycleFinder *collector = [[CircleSimpleCycleFinder alloc] init];
+    
+    id obj = [[NSObject alloc] init];
+    [collector addCandidate: obj];
+    [collector collect];
+    // no asserts, we just want to make sure it doesn't crash
+}
+
 @end

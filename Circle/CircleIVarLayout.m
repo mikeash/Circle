@@ -107,6 +107,11 @@ unsigned *CalculateClassStrongLayout(Class c)
     SEL destructorSEL = sel_getUid(".cxx_destruct");
     
     void (*Destruct)(void *, SEL) = (__typeof__(Destruct))class_getMethodImplementation(c, destructorSEL);
+    void (*Forward)(void *, SEL) = (__typeof__(Forward))class_getMethodImplementation([NSObject class], @selector(doNotImplementThisItDoesNotExistReally));
+    
+    if(Destruct == Forward)
+        return calloc(sizeof(unsigned), 1);
+    
     return CalculateStrongLayout((__bridge void *)c, class_getInstanceSize(c), ^(void *fakeObj) {
         Destruct(fakeObj, destructorSEL);
     });

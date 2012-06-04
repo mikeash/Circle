@@ -88,6 +88,16 @@ struct CircleSearchResults CircleSimpleSearchCycle(id obj)
     CFDictionaryRef infos = CopyInfosForReferents(obj);
     
     _CircleObjectInfo *info = (__bridge _CircleObjectInfo *)CFDictionaryGetValue(infos, (__bridge void *)obj);
+    
+    // short circuit: if there's no info object for obj, then it's not part of any sort of cycle
+    if(!info)
+    {
+        struct CircleSearchResults results;
+        results.isUnclaimedCycle = NO;
+        results.incomingReferences = CFSetCreate(NULL, NULL, 0, NULL);
+        return results;
+    }
+    
     CFSetRef incomingReferences = [info incomingReferences];
     NSUInteger retainCount = CFGetRetainCount((__bridge CFTypeRef)obj);
     LOG(@"%@ retain count is %lu, scanned incoming references are %@", obj, retainCount, CFBridgingRelease(CFCopyDescription(incomingReferences)));
