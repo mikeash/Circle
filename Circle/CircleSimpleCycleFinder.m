@@ -58,11 +58,7 @@ static CFDictionaryRef CopyInfosForReferents(id obj)
         
         LOG(@"Scanning candidate %p, retain count %lu", candidate, CFGetRetainCount((CFTypeRef)candidate));
         
-        unsigned *layout = GetStrongLayout(candidate);
-        for(int i = 0; layout[i]; i++)
-        {
-            void **reference = &candidate[layout[i]];
-            void *target = *reference;
+        EnumerateStrongReferences(candidate, ^(void **reference, void *target) {
             if(target)
             {
                 _CircleObjectInfo *info = (__bridge _CircleObjectInfo *)CFDictionaryGetValue(searchedObjs, target);
@@ -76,7 +72,7 @@ static CFDictionaryRef CopyInfosForReferents(id obj)
                 CFSetAddValue([info incomingReferences], reference);
                 CFSetAddValue([info referringObjects], candidate);
             }
-        }
+        });
     }
     CFRelease(toSearchObjs);
     

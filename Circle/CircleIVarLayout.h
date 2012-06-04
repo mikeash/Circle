@@ -13,3 +13,5 @@ unsigned *CalculateClassStrongLayout(Class c);
 unsigned *CalculateBlockStrongLayout(void *block);
 
 unsigned *GetStrongLayout(void *obj);
+
+void EnumerateStrongReferences(void *obj, void (^block)(void **reference, void *target));

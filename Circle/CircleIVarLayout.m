@@ -139,3 +139,16 @@ unsigned *GetStrongLayout(void *obj)
 {
     return IsBlock(obj) ? CalculateBlockStrongLayout(obj) : CalculateClassStrongLayout(object_getClass((__bridge id)obj));
 }
+
+void EnumerateStrongReferences(void *obj, void (^block)(void **reference, void *target))
+{
+    void **objAsReferences = obj;
+    unsigned *layout = GetStrongLayout(obj);
+    for(int i = 0; layout[i]; i++)
+    {
+        void **reference = &objAsReferences[layout[i]];
+        void *target = reference ? *reference : NULL;
+        block(reference, target);
+    }
+}
+
