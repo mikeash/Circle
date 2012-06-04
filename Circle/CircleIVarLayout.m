@@ -36,6 +36,11 @@ enum {
 };
 
 
+static unsigned kNoStrongReferencesLayout[] = { 0 };
+
+static CFMutableDictionaryRef gLayoutCache;
+
+
 @interface _CircleReleaseDetector : NSObject {
     BOOL _didRelease;
 }
@@ -110,34 +115,58 @@ unsigned *CalculateClassStrongLayout(Class c)
     void (*Forward)(void *, SEL) = (__typeof__(Forward))class_getMethodImplementation([NSObject class], @selector(doNotImplementThisItDoesNotExistReally));
     
     if(Destruct == Forward)
-        return calloc(sizeof(unsigned), 1);
+        return kNoStrongReferencesLayout;
     
     return CalculateStrongLayout((__bridge void *)c, class_getInstanceSize(c), ^(void *fakeObj) {
         Destruct(fakeObj, destructorSEL);
     });
 }
 
-unsigned *CalculateBlockStrongLayout(void *block)
+unsigned *GetClassStrongLayout(Class c)
+{
+    if(!gLayoutCache)
+        gLayoutCache = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+    
+    unsigned *layout = (unsigned *)CFDictionaryGetValue(gLayoutCache, (__bridge void *)c);
+    if(!layout)
+    {
+        layout = CalculateClassStrongLayout(c);
+        CFDictionarySetValue(gLayoutCache, (__bridge void *)c, layout);
+    }
+    return layout;
+}
+
+
+unsigned *GetBlockStrongLayout(void *block)
 {
     struct Block *realBlock = block;
     if(!(realBlock->flags & BLOCK_HAS_COPY_DISPOSE))
-        return calloc(sizeof(unsigned), 1);
+        return kNoStrongReferencesLayout;
     
     if(realBlock->flags & BLOCK_IS_GLOBAL)
-        return calloc(sizeof(unsigned), 1);
+        return kNoStrongReferencesLayout;
     
     struct BlockDescriptor *descriptor = realBlock->descriptor;
     
     void (*dispose_helper)(void *src) = descriptor->rest[1];
     
-    return CalculateStrongLayout(realBlock->isa, descriptor->size, ^(void *fakeObj) {
-        dispose_helper(fakeObj);
-    });
+    if(!gLayoutCache)
+        gLayoutCache = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+    
+    unsigned *layout = (unsigned *)CFDictionaryGetValue(gLayoutCache, dispose_helper);
+    if(!layout)
+    {
+        layout = CalculateStrongLayout(realBlock->isa, descriptor->size, ^(void *fakeObj) {
+            dispose_helper(fakeObj);
+        });
+        CFDictionarySetValue(gLayoutCache, dispose_helper, layout);
+    }
+    return layout;
 }
 
 unsigned *GetStrongLayout(void *obj)
 {
-    return IsBlock(obj) ? CalculateBlockStrongLayout(obj) : CalculateClassStrongLayout(object_getClass((__bridge id)obj));
+    return IsBlock(obj) ? GetBlockStrongLayout(obj) : GetClassStrongLayout(object_getClass((__bridge id)obj));
 }
 
 void EnumerateStrongReferences(void *obj, void (^block)(void **reference, void *target))
