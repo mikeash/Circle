@@ -150,4 +150,51 @@
     // no asserts, we just want to make sure it doesn't crash
 }
 
+- (void)testManyCollections
+{
+    CircleSimpleCycleFinder *collector = [[CircleSimpleCycleFinder alloc] init];
+    
+    id (^Cycle)(unsigned) = ^(unsigned length) {
+        Referrer *root = [[Referrer alloc] init];
+        Referrer *current = root;
+        for(unsigned i = 1; i < length; i++)
+        {
+            Referrer *new = [[Referrer alloc] init];
+            [current setPtr1: new];
+            current = new;
+        }
+        [current setPtr1: root];
+        return root;
+    };
+    
+    int COUNT = 20;
+    
+    __weak id weakObjs[COUNT];
+    id objs[COUNT];
+    @autoreleasepool {
+        for(int i = 0; i < COUNT; i++)
+        {
+            objs[i] = Cycle((i + 2) * 2);
+            weakObjs[i] = objs[i];
+            [collector addCandidate: objs[i]];
+        }
+    }
+    
+    @autoreleasepool {
+        for(int i = 0; i < COUNT; i++)
+            STAssertNotNil(weakObjs[i], @"Weak pointer to cycle should not be nil before running the collector");
+    }
+    
+    for(int i = 0; i < COUNT; i++)
+    {
+        @autoreleasepool {
+            objs[i] = nil;
+            [collector collect];
+        }
+    }
+    
+    for(int i = 0; i < COUNT; i++)
+        STAssertNil(weakObjs[i], @"Collector failed to collect a cycle");
+}
+
 @end
