@@ -116,7 +116,7 @@ static unsigned *CalculateStrongLayout(void *isa, size_t objSize, void(^destruct
     return layout;
 }
 
-unsigned *CalculateClassStrongLayout(Class c)
+static unsigned *CalculateClassStrongLayout(Class c)
 {
     SEL destructorSEL = sel_getUid(".cxx_destruct");
     
@@ -131,7 +131,7 @@ unsigned *CalculateClassStrongLayout(Class c)
     });
 }
 
-unsigned *GetClassStrongLayout(Class c)
+static unsigned *GetClassStrongLayout(Class c)
 {
     if(!gLayoutCache)
         gLayoutCache = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
@@ -146,7 +146,7 @@ unsigned *GetClassStrongLayout(Class c)
 }
 
 
-unsigned *GetBlockStrongLayout(void *block)
+static unsigned *GetBlockStrongLayout(void *block)
 {
     struct Block *realBlock = block;
     if(!(realBlock->flags & BLOCK_HAS_COPY_DISPOSE))

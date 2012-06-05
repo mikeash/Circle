@@ -9,7 +9,4 @@
 #import <Foundation/Foundation.h>
 
 
-unsigned *CalculateClassStrongLayout(Class c);
-unsigned *CalculateBlockStrongLayout(void *block);
-
 void EnumerateStrongReferences(void *obj, void (^block)(void **reference, void *target));
