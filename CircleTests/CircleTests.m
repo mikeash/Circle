@@ -262,4 +262,15 @@
     STAssertNil(weakObj, @"Collector didn't collect a cycle");
 }
 
+- (void)test__blockReference
+{
+    __block id obj = self;
+    id block = ^{ NSLog(@"%@", obj); };
+    block = [block copy];
+    
+    CircleSimpleCycleFinder *collector = [[CircleSimpleCycleFinder alloc] init];
+    [collector addCandidate: block];
+    [collector collect];
+}
+
 @end

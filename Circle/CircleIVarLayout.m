@@ -50,7 +50,17 @@ static CFMutableDictionaryRef gLayoutCache;
 static CFMutableDictionaryRef gClassificationCache;
 
 
+struct _block_byref_block;
 @interface _CircleReleaseDetector : NSObject {
+    // __block fakery
+    void *forwarding;
+    int flags;   //refcount;
+    int size;
+    void (*byref_keep)(struct _block_byref_block *dst, struct _block_byref_block *src);
+    void (*byref_dispose)(struct _block_byref_block *);
+    void *captured[16];
+    
+    // our own stuff here
     BOOL _didRelease;
 }
 
@@ -60,15 +70,22 @@ static BOOL DidRelease(void *obj);
 @end
 @implementation _CircleReleaseDetector
 
+static void byref_keep_nop(struct _block_byref_block *dst, struct _block_byref_block *src) {}
+static void byref_dispose_nop(struct _block_byref_block *param) {}
+
 + (void)initialize {
     Method m = class_getInstanceMethod(self, @selector(release_toSwizzle));
     class_addMethod(self, sel_getUid("release"), method_getImplementation(m), method_getTypeEncoding(m));
 }
 
 + (void *)make {
-    void *obj = calloc(class_getInstanceSize(self), 1);
-    object_setClass((__bridge id)obj, self);
-    return obj;
+    void *memory = calloc(class_getInstanceSize(self), 1);
+    __unsafe_unretained _CircleReleaseDetector *obj = (__bridge __unsafe_unretained id)memory;
+    object_setClass(obj, self);
+    obj->forwarding = memory;
+    obj->byref_keep = byref_keep_nop;
+    obj->byref_dispose = byref_dispose_nop;
+    return memory;
 }
 
 - (void)release_toSwizzle {
