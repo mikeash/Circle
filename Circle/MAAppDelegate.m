@@ -74,6 +74,9 @@
 - (id)tableView: (NSTableView *)tableView objectValueForTableColumn: (NSTableColumn *)tableColumn row: (NSInteger)row
 {
     CircleObjectInfo *info = [_infos objectAtIndex: row];
+    if(info == (id)[NSNull null])
+        return @"";
+    
     BOOL externallyReferenced = [info externallyReferenced];
     BOOL partOfCycle = [info partOfCycle];
     BOOL internallyReferenced = CFSetGetCount([info incomingReferences]) > 0;
@@ -91,7 +94,15 @@
 
 - (void)_ping
 {
-    _infos = [_collector objectInfos];
+    NSArray *infoArrays = [_collector objectInfos];
+    NSMutableArray *array = [NSMutableArray array];
+    for(NSArray *infos in infoArrays)
+    {
+        [array addObjectsFromArray: infos];
+        [array addObject: [NSNull null]];
+    }
+    [array removeLastObject];
+    _infos = array;
     [_tableView reloadData];
 }
 

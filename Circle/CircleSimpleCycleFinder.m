@@ -279,7 +279,7 @@ void CircleZeroReferences(CFSetRef references)
 {
     NSMutableArray *infos = [NSMutableArray array];
     [self _enumerateObjectsGatherAll: YES resultsCallback: ^(struct CircleSearchResults results) {
-        [infos addObjectsFromArray: [(__bridge id)results.infos allObjects]];
+        [infos addObject: [(__bridge id)results.infos allObjects]];
     }];
     return infos;
 }
