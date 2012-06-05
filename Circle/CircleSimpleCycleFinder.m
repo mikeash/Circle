@@ -48,9 +48,8 @@ static void AddAddressString(const void *value, void *context)
     NSMutableArray *referringObjectsStrings = [NSMutableArray array];
     CFSetApplyFunction(_referringObjects, AddAddressString, (__bridge void *)referringObjectsStrings);
     
-    return [NSString stringWithFormat: @"<%@ %p: object=%p externallyReferenced:%s incomingReferences=(%@) referringObjects=(%@)>",
+    return [NSString stringWithFormat: @"<%@: object=%p externallyReferenced:%s incomingReferences=(%@) referringObjects=(%@)>",
             [self class],
-            self,
             _object,
             _externallyReferenced ? "YES" : "NO",
             [incomingReferencesStrings componentsJoinedByString: @", "],

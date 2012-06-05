@@ -46,30 +46,72 @@
 @end
 
 @implementation MAAppDelegate {
-    id strong;
-    __weak id weak;
-    __unsafe_unretained id unsafe;
-    int int1;
-    id none;
-    int int2;
-    id array[10];
+    CircleSimpleCycleFinder *_collector;
+    NSArray *_infos;
+    NSMutableArray *_retainedCycles;
+}
+
+- (id)init
+{
+    if((self = [super init]))
+    {
+        _collector = [[CircleSimpleCycleFinder alloc] init];
+        _retainedCycles = [NSMutableArray array];
+    }
+    return self;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    id a = [[TestClass alloc] init];
-    id b = [[TestClass alloc] init];
-    [a setPtr: b];
-    [a setPtr2: [[TestClass alloc] init]];
-    [b setPtr: a];
-    
-    CircleSimpleCycleFinder *collector = [[CircleSimpleCycleFinder alloc] init];
-    [collector addCandidate: a];
-    
-    a = nil;
-    b = nil;
-    
-    NSLog(@"%@", [collector objectInfos]);
+    [NSTimer scheduledTimerWithTimeInterval: 1 target: self selector: @selector(_ping) userInfo: nil repeats: YES];
+}
+
+- (NSInteger)numberOfRowsInTableView: (NSTableView *)tableView
+{
+    return [_infos count];
+}
+
+- (id)tableView: (NSTableView *)tableView objectValueForTableColumn: (NSTableColumn *)tableColumn row: (NSInteger)row
+{
+    return [[_infos objectAtIndex: row] description];
+}
+
+- (void)_ping
+{
+    _infos = [_collector objectInfos];
+    [_tableView reloadData];
+}
+
+- (id)_makeCycle
+{
+    int count = random() % 4;
+    TestClass *root = [[TestClass alloc] init];
+    TestClass *current = root;
+    for(int i = 0; i < count; i++)
+    {
+        TestClass *new = [[TestClass alloc] init];
+        [current setPtr: new];
+        if(random() % 2)
+            [current setPtr2: [[TestClass alloc] init]];
+        current = new;
+    }
+    [current setPtr: root];
+    return root;
+}
+
+- (IBAction)makeCycle:(id)sender {
+    id obj = [self _makeCycle];
+    [_retainedCycles addObject: obj];
+    [_collector addCandidate: obj];
+}
+
+- (IBAction)leakCycle:(id)sender {
+    id obj = [self _makeCycle];
+    [_collector addCandidate: obj];
+}
+
+- (IBAction)collect:(id)sender {
+    [_collector collect];
 }
 
 @end

@@ -11,5 +11,10 @@
 @interface MAAppDelegate : NSObject <NSApplicationDelegate>
 
 @property (assign) IBOutlet NSWindow *window;
+@property (weak) IBOutlet NSTableView *tableView;
+
+- (IBAction)makeCycle:(id)sender;
+- (IBAction)leakCycle:(id)sender;
+- (IBAction)collect:(id)sender;
 
 @end
