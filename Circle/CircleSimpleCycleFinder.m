@@ -109,7 +109,7 @@ struct CircleSearchResults CircleSimpleSearchCycle(id obj, BOOL gatherAll)
             // short circuit: if there's no info object for obj, then it's not part of any sort of cycle
             struct CircleSearchResults results;
             results.isUnclaimedCycle = NO;
-            results.incomingReferences = CFSetCreate(NULL, NULL, 0, NULL);
+            results.referencesToZero = CFSetCreate(NULL, NULL, 0, NULL);
             results.infos = infos;
             return results;
         }
@@ -175,9 +175,15 @@ struct CircleSearchResults CircleSimpleSearchCycle(id obj, BOOL gatherAll)
     
     LOG(@"foundExternallyRetained is %d", foundExternallyRetained);
     
+    CFMutableSetRef referencesToZero = CFSetCreateMutable(NULL, 0, NULL);
+    EnumerateStrongReferences((__bridge void *)obj, ^(void **reference, void *target) {
+        if(target)
+            CFSetAddValue(referencesToZero, reference);
+    });
+    
     struct CircleSearchResults results;
     results.isUnclaimedCycle = !foundExternallyRetained;
-    results.incomingReferences = CFRetain(incomingReferences);
+    results.referencesToZero = referencesToZero;
     results.infos = infos;
     
     CFRelease(toSearchObjs);
@@ -188,11 +194,11 @@ struct CircleSearchResults CircleSimpleSearchCycle(id obj, BOOL gatherAll)
 
 void CircleZeroReferences(CFSetRef references)
 {
-    NSUInteger incomingReferencesCount = CFSetGetCount(references);
+    NSUInteger referencesCount = CFSetGetCount(references);
     
-    const void *locations[incomingReferencesCount];
+    const void *locations[referencesCount];
     CFSetGetValues(references, locations);
-    for(unsigned i = 0; i < incomingReferencesCount; i++)
+    for(unsigned i = 0; i < referencesCount; i++)
     {
         void **reference = (void **)locations[i];
         void *target = *reference;
@@ -243,7 +249,7 @@ void CircleZeroReferences(CFSetRef references)
         {
             struct CircleSearchResults results = CircleSimpleSearchCycle(obj, gatherAll);
             block(results);
-            CFRelease(results.incomingReferences);
+            CFRelease(results.referencesToZero);
             CFRelease(results.infos);
         }
         else
@@ -265,7 +271,7 @@ void CircleZeroReferences(CFSetRef references)
 {
     [self _enumerateObjectsGatherAll: NO resultsCallback: ^(struct CircleSearchResults results) {
         if(results.isUnclaimedCycle)
-            CircleZeroReferences(results.incomingReferences);
+            CircleZeroReferences(results.referencesToZero);
     }];
 }
 

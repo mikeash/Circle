@@ -12,7 +12,7 @@
 struct CircleSearchResults
 {
     BOOL isUnclaimedCycle;
-    CFSetRef incomingReferences;
+    CFSetRef referencesToZero;
     CFDictionaryRef infos;
 };
 

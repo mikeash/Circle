@@ -107,6 +107,8 @@
         weakObj = a;
         
         [collector addCandidate: a];
+        [collector addCandidate: b];
+        [collector addCandidate: c];
     }
     
     @autoreleasepool {
@@ -195,6 +197,69 @@
     
     for(int i = 0; i < COUNT; i++)
         STAssertNil(weakObjs[i], @"Collector failed to collect a cycle");
+}
+
+- (void)testArrayCycle
+{
+    CircleSimpleCycleFinder *collector = [[CircleSimpleCycleFinder alloc] init];
+    
+    __weak id weakObj;
+    @autoreleasepool {
+        Referrer *a = [[Referrer alloc] init];
+        NSArray *b = @[ a ];
+        [a setPtr1: b];
+        weakObj = a;
+        
+        [collector addCandidate: a];
+    }
+    
+    @autoreleasepool {
+        STAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
+    }
+    [collector collect];
+    STAssertNil(weakObj, @"Collector didn't collect a cycle");
+}
+
+- (void)testSetCycle
+{
+    CircleSimpleCycleFinder *collector = [[CircleSimpleCycleFinder alloc] init];
+    
+    __weak id weakObj;
+    @autoreleasepool {
+        Referrer *a = [[Referrer alloc] init];
+        NSSet *b = [NSSet setWithObject: a];
+        [a setPtr1: b];
+        weakObj = a;
+        
+        [collector addCandidate: a];
+    }
+    
+    @autoreleasepool {
+        STAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
+    }
+    [collector collect];
+    STAssertNil(weakObj, @"Collector didn't collect a cycle");
+}
+
+- (void)testDictionaryCycle
+{
+    CircleSimpleCycleFinder *collector = [[CircleSimpleCycleFinder alloc] init];
+    
+    __weak id weakObj;
+    @autoreleasepool {
+        Referrer *a = [[Referrer alloc] init];
+        NSDictionary *b = @{ @"a" : a };
+        [a setPtr1: b];
+        weakObj = a;
+        
+        [collector addCandidate: a];
+    }
+    
+    @autoreleasepool {
+        STAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
+    }
+    [collector collect];
+    STAssertNil(weakObj, @"Collector didn't collect a cycle");
 }
 
 @end

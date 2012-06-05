@@ -36,9 +36,18 @@ enum {
 };
 
 
+enum Classification
+{
+    ENUMERABLE,
+    DICTIONARY,
+    BLOCK,
+    OTHER
+};
+
 static unsigned kNoStrongReferencesLayout[] = { 0 };
 
 static CFMutableDictionaryRef gLayoutCache;
+static CFMutableDictionaryRef gClassificationCache;
 
 
 @interface _CircleReleaseDetector : NSObject {
@@ -164,20 +173,60 @@ unsigned *GetBlockStrongLayout(void *block)
     return layout;
 }
 
-unsigned *GetStrongLayout(void *obj)
+static enum Classification Classify(void *obj)
 {
-    return IsBlock(obj) ? GetBlockStrongLayout(obj) : GetClassStrongLayout(object_getClass((__bridge id)obj));
+    if(!gClassificationCache)
+        gClassificationCache = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+    
+    void *key = (__bridge void *)object_getClass((__bridge id)obj);
+    
+    const void *value;
+    Boolean present = CFDictionaryGetValueIfPresent(gClassificationCache, key, &value);
+    if(present)
+        return (enum Classification)value;
+    
+    enum Classification classification = OTHER;
+    if(IsBlock(obj))
+        classification = BLOCK;
+    else if([(__bridge id)obj isKindOfClass: [NSArray class]] || [(__bridge id)obj isKindOfClass: [NSSet class]])
+        classification = ENUMERABLE;
+    else if([(__bridge id)obj isKindOfClass: [NSDictionary class]])
+        classification = DICTIONARY;
+    
+    CFDictionarySetValue(gClassificationCache, key, (const void *)classification);
+    
+    return classification;
 }
 
 void EnumerateStrongReferences(void *obj, void (^block)(void **reference, void *target))
 {
-    void **objAsReferences = obj;
-    unsigned *layout = GetStrongLayout(obj);
-    for(int i = 0; layout[i]; i++)
+    enum Classification classification = Classify(obj);
+    if(classification == ENUMERABLE)
     {
-        void **reference = &objAsReferences[layout[i]];
-        void *target = reference ? *reference : NULL;
-        block(reference, target);
+        for(id target in (__bridge id)obj)
+            block(NULL, (__bridge void *)target);
+    }
+    else if(classification == DICTIONARY)
+    {
+        [(__bridge NSDictionary *)obj enumerateKeysAndObjectsUsingBlock: ^(id key, id obj, BOOL *stop) {
+            block(NULL, (__bridge void *)key);
+            block(NULL, (__bridge void *)obj);
+        }];
+    }
+    else
+    {
+        unsigned *layout;
+        if(classification == BLOCK)
+            layout = GetBlockStrongLayout(obj);
+        else
+            layout = GetClassStrongLayout(object_getClass((__bridge id)obj));
+        
+        void **objAsReferences = obj;
+        for(int i = 0; layout[i]; i++)
+        {
+            void **reference = &objAsReferences[layout[i]];
+            void *target = reference ? *reference : NULL;
+            block(reference, target);
+        }
     }
 }
-
