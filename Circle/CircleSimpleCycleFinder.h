@@ -13,14 +13,25 @@ struct CircleSearchResults
 {
     BOOL isUnclaimedCycle;
     CFSetRef incomingReferences;
+    CFDictionaryRef infos;
 };
 
-struct CircleSearchResults CircleSimpleSearchCycle(id obj);
+struct CircleSearchResults CircleSimpleSearchCycle(id obj, BOOL gatherAll);
 void CircleZeroReferences(CFSetRef references);
+
+@interface CircleObjectInfo : NSObject
+
+@property void *object;
+@property BOOL externallyReferenced;
+@property CFMutableSetRef incomingReferences;
+@property CFMutableSetRef referringObjects;
+
+@end
 
 @interface CircleSimpleCycleFinder : NSObject
 
 - (void)addCandidate: (id)obj;
 - (void)collect;
+- (NSArray *)objectInfos;
 
 @end

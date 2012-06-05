@@ -55,69 +55,21 @@
     id array[10];
 }
 
-static void PrintLayout(id obj)
-{
-    unsigned *layout = GetStrongLayout((__bridge void *)obj);
-    NSMutableArray *strings = [NSMutableArray array];
-    for(int i = 0; layout[i]; i++)
-        [strings addObject: [NSString stringWithFormat: @"%u", layout[i]]];
-    NSLog(@"%@: strong references located at offsets (%@)", obj, [strings componentsJoinedByString: @", "]);
-}
-
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    PrintLayout(self);
+    id a = [[TestClass alloc] init];
+    id b = [[TestClass alloc] init];
+    [a setPtr: b];
+    [a setPtr2: [[TestClass alloc] init]];
+    [b setPtr: a];
     
-    __weak id weakSelf = self;
-    void (^block)(void) = ^{
-        NSLog(@"%@ %@ %@", self, aNotification, weakSelf);
-    };
-    block = [block copy];
-    PrintLayout(block);
-    
-    __weak id weakObj1;
-    __weak id weakObj2;
-    __weak id weakObj3;
     CircleSimpleCycleFinder *collector = [[CircleSimpleCycleFinder alloc] init];
-    @autoreleasepool {
-        TestClass *a = [[TestClass alloc] init];
-        TestClass *b = [[TestClass alloc] init];
-        TestClass *c = [[TestClass alloc] init];
-        [a setPtr: b];
-        [a setPtr2: c];
-        [b setPtr: a];
-        [b setPtr2: self];
-        [c setPtr: a];
-        weakObj1 = a;
-        [collector addCandidate: a];
-    }
-    @autoreleasepool {
-        TestClass *a = [[TestClass alloc] init];
-        TestClass *b = [[TestClass alloc] init];
-        TestClass *c = [[TestClass alloc] init];
-        [a setPtr: b];
-        [a setPtr2: c];
-        [b setPtr: a];
-        [b setPtr2: self];
-        [c setPtr: a];
-        weakObj2 = a;
-        
-        self->strong = b;
-        NSLog(@"Before collecting, chaining gives %@", [self->strong ptr]);
-        
-        [collector addCandidate: a];
-    }
-    @autoreleasepool {
-        TestClass *a = [[TestClass alloc] init];
-        [a setPtr: [^{ NSLog(@"%@", a); } copy]];
-        weakObj3 = a;
-        [collector addCandidate: a];
-    }
-    @autoreleasepool {
-        [collector collect];
-    }
-    NSLog(@"After collecting, weak objects are %@ %@ %@", weakObj1, weakObj2, weakObj3);
-    NSLog(@"After collecting, chaining gives %@", [self->strong ptr]);
+    [collector addCandidate: a];
+    
+    a = nil;
+    b = nil;
+    
+    NSLog(@"%@", [collector objectInfos]);
 }
 
 @end

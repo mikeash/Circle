@@ -16,14 +16,7 @@
 #define LOG(...) do { if(DEBUG_LOG) NSLog(__VA_ARGS__); } while(0)
 
 
-@interface _CircleObjectInfo : NSObject
-
-@property CFMutableSetRef incomingReferences;
-@property CFMutableSetRef referringObjects;
-
-@end
-
-@implementation _CircleObjectInfo
+@implementation CircleObjectInfo
 
 - (id)init
 {
@@ -41,9 +34,32 @@
     CFRelease(_referringObjects);
 }
 
+static void AddAddressString(const void *value, void *context)
+{
+    NSMutableArray *array = (__bridge id)context;
+    [array addObject: [NSString stringWithFormat: @"%p", value]];
+}
+
+- (NSString *)description
+{
+    NSMutableArray *incomingReferencesStrings = [NSMutableArray array];
+    CFSetApplyFunction(_incomingReferences, AddAddressString, (__bridge void *)incomingReferencesStrings);
+    
+    NSMutableArray *referringObjectsStrings = [NSMutableArray array];
+    CFSetApplyFunction(_referringObjects, AddAddressString, (__bridge void *)referringObjectsStrings);
+    
+    return [NSString stringWithFormat: @"<%@ %p: object=%p externallyReferenced:%s incomingReferences=(%@) referringObjects=(%@)>",
+            [self class],
+            self,
+            _object,
+            _externallyReferenced ? "YES" : "NO",
+            [incomingReferencesStrings componentsJoinedByString: @", "],
+            [referringObjectsStrings componentsJoinedByString: @", "]];
+}
+
 @end
 
-static CFDictionaryRef CopyInfosForReferents(id obj)
+static CFMutableDictionaryRef CopyInfosForReferents(id obj)
 {
     CFMutableDictionaryRef searchedObjs = CFDictionaryCreateMutable(NULL, 0, NULL, &kCFTypeDictionaryValueCallBacks);
     CFMutableArrayRef toSearchObjs = CFArrayCreateMutable(NULL, 0, NULL);
@@ -61,10 +77,11 @@ static CFDictionaryRef CopyInfosForReferents(id obj)
         EnumerateStrongReferences(candidate, ^(void **reference, void *target) {
             if(target)
             {
-                _CircleObjectInfo *info = (__bridge _CircleObjectInfo *)CFDictionaryGetValue(searchedObjs, target);
+                CircleObjectInfo *info = (__bridge CircleObjectInfo *)CFDictionaryGetValue(searchedObjs, target);
                 if(!info)
                 {
-                    info = [[_CircleObjectInfo alloc] init];
+                    info = [[CircleObjectInfo alloc] init];
+                    [info setObject: target];
                     CFDictionarySetValue(searchedObjs, target, (__bridge void *)info);
                     CFArrayAppendValue(toSearchObjs, target);
                 }
@@ -79,19 +96,30 @@ static CFDictionaryRef CopyInfosForReferents(id obj)
     return searchedObjs;
 }
 
-struct CircleSearchResults CircleSimpleSearchCycle(id obj)
+struct CircleSearchResults CircleSimpleSearchCycle(id obj, BOOL gatherAll)
 {
-    CFDictionaryRef infos = CopyInfosForReferents(obj);
+    CFMutableDictionaryRef infos = CopyInfosForReferents(obj);
     
-    _CircleObjectInfo *info = (__bridge _CircleObjectInfo *)CFDictionaryGetValue(infos, (__bridge void *)obj);
+    CircleObjectInfo *info = (__bridge CircleObjectInfo *)CFDictionaryGetValue(infos, (__bridge void *)obj);
     
-    // short circuit: if there's no info object for obj, then it's not part of any sort of cycle
     if(!info)
     {
-        struct CircleSearchResults results;
-        results.isUnclaimedCycle = NO;
-        results.incomingReferences = CFSetCreate(NULL, NULL, 0, NULL);
-        return results;
+        if(!gatherAll)
+        {
+            // short circuit: if there's no info object for obj, then it's not part of any sort of cycle
+            struct CircleSearchResults results;
+            results.isUnclaimedCycle = NO;
+            results.incomingReferences = CFSetCreate(NULL, NULL, 0, NULL);
+            results.infos = infos;
+            return results;
+        }
+        else
+        {
+            // add an empty info for obj so the caller gets complete results
+            info = [[CircleObjectInfo alloc] init];
+            [info setObject: (__bridge void *)obj];
+            CFDictionarySetValue(infos, (__bridge void *)obj, (__bridge void *)info);
+        }
     }
     
     CFSetRef incomingReferences = [info incomingReferences];
@@ -112,7 +140,7 @@ struct CircleSearchResults CircleSimpleSearchCycle(id obj)
         CFArrayRemoveValueAtIndex(toSearchObjs, count - 1);
         CFSetAddValue(didSearchObjs, cycleObj);
         
-        _CircleObjectInfo *info = (__bridge _CircleObjectInfo *)CFDictionaryGetValue(infos, cycleObj);
+        CircleObjectInfo *info = (__bridge CircleObjectInfo *)CFDictionaryGetValue(infos, cycleObj);
         CFSetRef referencesCF = [info incomingReferences];
         CFIndex referencesCount = CFSetGetCount(referencesCF);
         
@@ -124,7 +152,9 @@ struct CircleSearchResults CircleSimpleSearchCycle(id obj)
         if(retainCount != referencesCount)
         {
             foundExternallyRetained = YES;
-            break;
+            [info setExternallyReferenced: YES];
+            if(!gatherAll)
+                break;
         }
         
         CFSetRef referringObjectsCF = [info referringObjects];
@@ -145,8 +175,8 @@ struct CircleSearchResults CircleSimpleSearchCycle(id obj)
     struct CircleSearchResults results;
     results.isUnclaimedCycle = !foundExternallyRetained;
     results.incomingReferences = CFRetain(incomingReferences);
+    results.infos = infos;
     
-    CFRelease(infos);
     CFRelease(toSearchObjs);
     CFRelease(didSearchObjs);
     
@@ -195,7 +225,7 @@ void CircleZeroReferences(CFSetRef references)
     [_weakRefs addObject: ref];
 }
 
-- (void)collect
+- (void)_enumerateObjectsGatherAll: (BOOL) gatherAll resultsCallback: (void (^)(struct CircleSearchResults results)) block
 {
     NSMutableIndexSet *zeroedIndices;
     
@@ -208,10 +238,10 @@ void CircleZeroReferences(CFSetRef references)
         }
         if(obj)
         {
-            struct CircleSearchResults results = CircleSimpleSearchCycle(obj);
-            if(results.isUnclaimedCycle)
-                CircleZeroReferences(results.incomingReferences);
+            struct CircleSearchResults results = CircleSimpleSearchCycle(obj, gatherAll);
+            block(results);
             CFRelease(results.incomingReferences);
+            CFRelease(results.infos);
         }
         else
         {
@@ -224,6 +254,25 @@ void CircleZeroReferences(CFSetRef references)
     
     if(zeroedIndices)
         [_weakRefs removeObjectsAtIndexes: zeroedIndices];
+    
+    
+}
+
+- (void)collect
+{
+    [self _enumerateObjectsGatherAll: NO resultsCallback: ^(struct CircleSearchResults results) {
+        if(results.isUnclaimedCycle)
+            CircleZeroReferences(results.incomingReferences);
+    }];
+}
+
+- (NSArray *)objectInfos
+{
+    NSMutableArray *infos = [NSMutableArray array];
+    [self _enumerateObjectsGatherAll: YES resultsCallback: ^(struct CircleSearchResults results) {
+        [infos addObjectsFromArray: [(__bridge id)results.infos allObjects]];
+    }];
+    return infos;
 }
 
 @end
