@@ -48,7 +48,7 @@
 @implementation MAAppDelegate {
     CircleSimpleCycleFinder *_collector;
     NSArray *_infos;
-    NSMutableArray *_retainedCycles;
+    NSMutableArray *_retainedObjects;
 }
 
 - (id)init
@@ -56,7 +56,7 @@
     if((self = [super init]))
     {
         _collector = [[CircleSimpleCycleFinder alloc] init];
-        _retainedCycles = [NSMutableArray array];
+        _retainedObjects = [NSMutableArray array];
     }
     return self;
 }
@@ -73,7 +73,20 @@
 
 - (id)tableView: (NSTableView *)tableView objectValueForTableColumn: (NSTableColumn *)tableColumn row: (NSInteger)row
 {
-    return [[_infos objectAtIndex: row] description];
+    CircleObjectInfo *info = [_infos objectAtIndex: row];
+    BOOL externallyReferenced = [info externallyReferenced];
+    BOOL partOfCycle = [info partOfCycle];
+    BOOL internallyReferenced = CFSetGetCount([info incomingReferences]) > 0;
+    
+    NSColor *color = (!partOfCycle ? [NSColor colorWithDeviceRed: 0.0 green: 0.5 blue: 0.0 alpha: 1.0] :
+                      externallyReferenced && !internallyReferenced ? [NSColor blackColor] :
+                      externallyReferenced && internallyReferenced ? [NSColor blueColor] :
+                      !externallyReferenced && internallyReferenced ? [NSColor redColor] :
+                      [NSColor greenColor]);
+    
+    NSAttributedString *str = [[NSAttributedString alloc] initWithString: [info description] attributes: @{ NSForegroundColorAttributeName : color }];
+    
+    return str;
 }
 
 - (void)_ping
@@ -82,7 +95,7 @@
     [_tableView reloadData];
 }
 
-- (id)_makeCycle
+- (id)_makeObjects: (BOOL)cycle
 {
     int count = random() % 4;
     TestClass *root = [[TestClass alloc] init];
@@ -95,18 +108,27 @@
             [current setPtr2: [[TestClass alloc] init]];
         current = new;
     }
-    [current setPtr: root];
+    
+    if(cycle)
+        [current setPtr: root];
+    
     return root;
 }
 
 - (IBAction)makeCycle:(id)sender {
-    id obj = [self _makeCycle];
-    [_retainedCycles addObject: obj];
+    id obj = [self _makeObjects: YES];
+    [_retainedObjects addObject: obj];
     [_collector addCandidate: obj];
 }
 
 - (IBAction)leakCycle:(id)sender {
-    id obj = [self _makeCycle];
+    id obj = [self _makeObjects: YES];
+    [_collector addCandidate: obj];
+}
+
+- (IBAction)makeNonCycle:(id)sender {
+    id obj = [self _makeObjects: NO];
+    [_retainedObjects addObject: obj];
     [_collector addCandidate: obj];
 }
 

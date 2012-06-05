@@ -15,6 +15,7 @@
 
 - (IBAction)makeCycle:(id)sender;
 - (IBAction)leakCycle:(id)sender;
+- (IBAction)makeNonCycle:(id)sender;
 - (IBAction)collect:(id)sender;
 
 @end

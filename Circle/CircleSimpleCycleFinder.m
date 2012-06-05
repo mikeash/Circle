@@ -48,10 +48,11 @@ static void AddAddressString(const void *value, void *context)
     NSMutableArray *referringObjectsStrings = [NSMutableArray array];
     CFSetApplyFunction(_referringObjects, AddAddressString, (__bridge void *)referringObjectsStrings);
     
-    return [NSString stringWithFormat: @"<%@: object=%p externallyReferenced:%s incomingReferences=(%@) referringObjects=(%@)>",
+    return [NSString stringWithFormat: @"<%@: object=%p externallyReferenced:%s partOfCycle:%s incomingReferences=(%@) referringObjects=(%@)>",
             [self class],
             _object,
             _externallyReferenced ? "YES" : "NO",
+            _partOfCycle ? "YES" : "NO",
             [incomingReferencesStrings componentsJoinedByString: @", "],
             [referringObjectsStrings componentsJoinedByString: @", "]];
 }
@@ -132,6 +133,8 @@ struct CircleSearchResults CircleSimpleSearchCycle(id obj, BOOL gatherAll)
     
     BOOL foundExternallyRetained = NO;
     
+    BOOL hasCycle = CFSetGetCount(incomingReferences) > 0;
+    
     CFIndex count;
     while((count = CFArrayGetCount(toSearchObjs)) > 0)
     {
@@ -143,10 +146,11 @@ struct CircleSearchResults CircleSimpleSearchCycle(id obj, BOOL gatherAll)
         CFSetRef referencesCF = [info incomingReferences];
         CFIndex referencesCount = CFSetGetCount(referencesCF);
         
+        [info setPartOfCycle: hasCycle];
+        
         CFIndex retainCount = CFGetRetainCount(cycleObj);
         if(cycleObj == (__bridge void *)obj)
             retainCount -= 2;
-        
         
         if(retainCount != referencesCount)
         {
