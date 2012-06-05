@@ -48,10 +48,11 @@ static void AddAddressString(const void *value, void *context)
     NSMutableArray *referringObjectsStrings = [NSMutableArray array];
     CFSetApplyFunction(_referringObjects, AddAddressString, (__bridge void *)referringObjectsStrings);
     
-    return [NSString stringWithFormat: @"<%@: object=%p externallyReferenced:%s partOfCycle:%s incomingReferences=(%@) referringObjects=(%@)>",
+    return [NSString stringWithFormat: @"<%@: object=%p externallyReferenced:%s leaked:%s partOfCycle:%s incomingReferences=(%@) referringObjects=(%@)>",
             [self class],
             _object,
             _externallyReferenced ? "YES" : "NO",
+            _leaked ? "YES" : "NO",
             _partOfCycle ? "YES" : "NO",
             [incomingReferencesStrings componentsJoinedByString: @", "],
             [referringObjectsStrings componentsJoinedByString: @", "]];
@@ -174,6 +175,12 @@ struct CircleSearchResults CircleSimpleSearchCycle(id obj, BOOL gatherAll)
     }
     
     LOG(@"foundExternallyRetained is %d", foundExternallyRetained);
+    
+    if(!foundExternallyRetained)
+    {
+        for(CircleObjectInfo *info in [(__bridge id)infos objectEnumerator])
+            [info setLeaked: YES];
+    }
     
     CFMutableSetRef referencesToZero = CFSetCreateMutable(NULL, 0, NULL);
     EnumerateStrongReferences((__bridge void *)obj, ^(void **reference, void *target) {

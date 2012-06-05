@@ -79,12 +79,14 @@
     
     BOOL externallyReferenced = [info externallyReferenced];
     BOOL partOfCycle = [info partOfCycle];
+    BOOL leaked = [info leaked];
     BOOL internallyReferenced = CFSetGetCount([info incomingReferences]) > 0;
     
     NSColor *color = (!partOfCycle ? [NSColor colorWithDeviceRed: 0.0 green: 0.5 blue: 0.0 alpha: 1.0] :
+                      leaked ? [NSColor redColor] :
                       externallyReferenced && !internallyReferenced ? [NSColor blackColor] :
                       externallyReferenced && internallyReferenced ? [NSColor blueColor] :
-                      !externallyReferenced && internallyReferenced ? [NSColor redColor] :
+                      !externallyReferenced && internallyReferenced ? [NSColor orangeColor] :
                       [NSColor greenColor]);
     
     NSAttributedString *str = [[NSAttributedString alloc] initWithString: [info description] attributes: @{ NSForegroundColorAttributeName : color }];

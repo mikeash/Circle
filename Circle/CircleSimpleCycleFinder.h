@@ -24,6 +24,7 @@ void CircleZeroReferences(CFSetRef references);
 @property void *object;
 @property BOOL externallyReferenced;
 @property BOOL partOfCycle;
+@property BOOL leaked;
 @property CFMutableSetRef incomingReferences;
 @property CFMutableSetRef referringObjects;
 
