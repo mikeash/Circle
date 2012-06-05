@@ -44,8 +44,6 @@ enum Classification
     OTHER
 };
 
-static unsigned kNoStrongReferencesLayout[] = { 0 };
-
 static CFMutableDictionaryRef gLayoutCache;
 static CFMutableDictionaryRef gClassificationCache;
 
@@ -108,7 +106,7 @@ static BOOL IsBlock(void *obj)
     return [candidate isSubclassOfClass: blockClass];
 }
 
-static unsigned *CalculateStrongLayout(void *isa, size_t objSize, void(^destruct)(void *fakeObj))
+static NSIndexSet *CalculateStrongLayout(void *isa, size_t objSize, void(^destruct)(void *fakeObj))
 {
     size_t ptrSize = sizeof(void *);
     size_t elements = (objSize + ptrSize - 1) / ptrSize;
@@ -119,21 +117,21 @@ static unsigned *CalculateStrongLayout(void *isa, size_t objSize, void(^destruct
         detectors[i] = obj[i] = [_CircleReleaseDetector make];
     
     destruct(obj);
-
-    unsigned *layout = malloc(sizeof(unsigned) * elements);
-    int cursor = 0;
     
+    NSMutableIndexSet *layout = [NSMutableIndexSet indexSet];
+
     for (unsigned i = 0; i < elements; i++) {
         if(DidRelease(detectors[i]))
-            layout[cursor++] = i;
+            [layout addIndex: i];
         free(detectors[i]);
     }
-    layout[cursor] = 0;
     
     return layout;
 }
 
-static unsigned *CalculateClassStrongLayout(Class c)
+static NSIndexSet *GetClassStrongLayout(Class c);
+
+static NSIndexSet *CalculateClassStrongLayout(Class c)
 {
     SEL destructorSEL = sel_getUid(".cxx_destruct");
     
@@ -141,36 +139,46 @@ static unsigned *CalculateClassStrongLayout(Class c)
     void (*Forward)(void *, SEL) = (__typeof__(Forward))class_getMethodImplementation([NSObject class], @selector(doNotImplementThisItDoesNotExistReally));
     
     if(Destruct == Forward)
-        return kNoStrongReferencesLayout;
+        return [NSIndexSet indexSet];
     
-    return CalculateStrongLayout((__bridge void *)c, class_getInstanceSize(c), ^(void *fakeObj) {
+    NSIndexSet *layout = CalculateStrongLayout((__bridge void *)c, class_getInstanceSize(c), ^(void *fakeObj) {
         Destruct(fakeObj, destructorSEL);
     });
+    
+    Class superclass = [c superclass];
+    if(superclass)
+    {
+        NSIndexSet *superLayout = GetClassStrongLayout(superclass);
+        NSMutableIndexSet *both = [layout mutableCopy];
+        [both addIndexes: superLayout];
+        layout = both;
+    }
+    return layout;
 }
 
-static unsigned *GetClassStrongLayout(Class c)
+static NSIndexSet *GetClassStrongLayout(Class c)
 {
     if(!gLayoutCache)
-        gLayoutCache = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+        gLayoutCache = CFDictionaryCreateMutable(NULL, 0, NULL, &kCFTypeDictionaryValueCallBacks);
     
-    unsigned *layout = (unsigned *)CFDictionaryGetValue(gLayoutCache, (__bridge void *)c);
+    NSIndexSet *layout = (__bridge NSIndexSet *)CFDictionaryGetValue(gLayoutCache, (__bridge void *)c);
     if(!layout)
     {
         layout = CalculateClassStrongLayout(c);
-        CFDictionarySetValue(gLayoutCache, (__bridge void *)c, layout);
+        CFDictionarySetValue(gLayoutCache, (__bridge void *)c, (__bridge void *)layout);
     }
     return layout;
 }
 
 
-static unsigned *GetBlockStrongLayout(void *block)
+static NSIndexSet *GetBlockStrongLayout(void *block)
 {
     struct Block *realBlock = block;
     if(!(realBlock->flags & BLOCK_HAS_COPY_DISPOSE))
-        return kNoStrongReferencesLayout;
+        return [NSIndexSet indexSet];
     
     if(realBlock->flags & BLOCK_IS_GLOBAL)
-        return kNoStrongReferencesLayout;
+        return [NSIndexSet indexSet];
     
     struct BlockDescriptor *descriptor = realBlock->descriptor;
     
@@ -179,13 +187,13 @@ static unsigned *GetBlockStrongLayout(void *block)
     if(!gLayoutCache)
         gLayoutCache = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
     
-    unsigned *layout = (unsigned *)CFDictionaryGetValue(gLayoutCache, dispose_helper);
+    NSIndexSet *layout = (__bridge NSIndexSet *)CFDictionaryGetValue(gLayoutCache, dispose_helper);
     if(!layout)
     {
         layout = CalculateStrongLayout(realBlock->isa, descriptor->size, ^(void *fakeObj) {
             dispose_helper(fakeObj);
         });
-        CFDictionarySetValue(gLayoutCache, dispose_helper, layout);
+        CFDictionarySetValue(gLayoutCache, dispose_helper, (__bridge void *)layout);
     }
     return layout;
 }
@@ -232,18 +240,17 @@ void EnumerateStrongReferences(void *obj, void (^block)(void **reference, void *
     }
     else
     {
-        unsigned *layout;
+        NSIndexSet *layout;
         if(classification == BLOCK)
             layout = GetBlockStrongLayout(obj);
         else
             layout = GetClassStrongLayout(object_getClass((__bridge id)obj));
         
         void **objAsReferences = obj;
-        for(int i = 0; layout[i]; i++)
-        {
-            void **reference = &objAsReferences[layout[i]];
+        [layout enumerateIndexesUsingBlock: ^(NSUInteger idx, BOOL *stop) {
+            void **reference = &objAsReferences[idx];
             void *target = reference ? *reference : NULL;
             block(reference, target);
-        }
+        }];
     }
 }

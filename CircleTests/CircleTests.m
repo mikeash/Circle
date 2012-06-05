@@ -18,6 +18,12 @@
 @implementation Referrer
 @end
 
+@interface ReferrerSubclass : Referrer
+@property (strong) id ptr3;
+@end
+@implementation  ReferrerSubclass
+@end
+
 @implementation CircleTests
 
 - (void)testEmptyCollector
@@ -271,6 +277,28 @@
     CircleSimpleCycleFinder *collector = [[CircleSimpleCycleFinder alloc] init];
     [collector addCandidate: block];
     [collector collect];
+}
+
+- (void)testSimpleSubclassCycle
+{
+    CircleSimpleCycleFinder *collector = [[CircleSimpleCycleFinder alloc] init];
+    
+    __weak id weakObj;
+    @autoreleasepool {
+        Referrer *a = [[ReferrerSubclass alloc] init];
+        Referrer *b = [[ReferrerSubclass alloc] init];
+        [a setPtr1: b];
+        [b setPtr1: a];
+        weakObj = a;
+        
+        [collector addCandidate: a];
+    }
+    
+    @autoreleasepool {
+        STAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
+    }
+    [collector collect];
+    STAssertNil(weakObj, @"Collector didn't collect a cycle");
 }
 
 @end
