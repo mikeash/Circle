@@ -63,7 +63,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    [NSTimer scheduledTimerWithTimeInterval: 1 target: self selector: @selector(_ping) userInfo: nil repeats: YES];
+    [NSTimer scheduledTimerWithTimeInterval: 0.1 target: self selector: @selector(_ping) userInfo: nil repeats: YES];
 }
 
 - (NSInteger)numberOfRowsInTableView: (NSTableView *)tableView
