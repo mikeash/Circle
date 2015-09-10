@@ -240,7 +240,7 @@ static NSIndexSet *GetBlockStrongLayout(void *block)
     
     // If the layout cache doesn't exist, create it now. We'll add an entry to it.
     if(!gLayoutCache)
-        gLayoutCache = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+        gLayoutCache = CFDictionaryCreateMutable(NULL, 0, NULL, &kCFTypeDictionaryValueCallBacks);
     
     // See if the layout already exists. We can't use the block isa as a key, since different
     // blocks can share an isa. Instead, we use the address of the destructor function as the
