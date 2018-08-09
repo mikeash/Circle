@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F8FDCC0211CDDD500A76988 /* CircleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C2A7A1D3154F50D300940C81 /* CircleTests.m */; };
 		C20335DE157BDEC9003A6733 /* CircleSimpleCycleFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = C20335DD157BDEC9003A6733 /* CircleSimpleCycleFinder.m */; };
 		C23AF6EE1579162000D2DF2E /* CircleIVarLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = C23AF6ED1579162000D2DF2E /* CircleIVarLayout.m */; };
 		C2A7A1AA154F50D200940C81 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2A7A1A9154F50D200940C81 /* Cocoa.framework */; };
@@ -15,14 +16,10 @@
 		C2A7A1BA154F50D200940C81 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = C2A7A1B8154F50D200940C81 /* Credits.rtf */; };
 		C2A7A1BD154F50D200940C81 /* MAAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C2A7A1BC154F50D200940C81 /* MAAppDelegate.m */; };
 		C2A7A1C0154F50D300940C81 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C2A7A1BE154F50D300940C81 /* MainMenu.xib */; };
-		C2A7A1C8154F50D300940C81 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2A7A1C7154F50D300940C81 /* SenTestingKit.framework */; };
-		C2A7A1C9154F50D300940C81 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2A7A1A9154F50D200940C81 /* Cocoa.framework */; };
-		C2A7A1D1154F50D300940C81 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C2A7A1CF154F50D300940C81 /* InfoPlist.strings */; };
-		C2A7A1D4154F50D300940C81 /* CircleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C2A7A1D3154F50D300940C81 /* CircleTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		C2A7A1CA154F50D300940C81 /* PBXContainerItemProxy */ = {
+		1F8FDCBB211CDD7400A76988 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C2A7A19C154F50D200940C81 /* Project object */;
 			proxyType = 1;
@@ -32,6 +29,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1F8FDCB6211CDD7400A76988 /* CircleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CircleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F8FDCBA211CDD7400A76988 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C20335DC157BDEC9003A6733 /* CircleSimpleCycleFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CircleSimpleCycleFinder.h; sourceTree = "<group>"; };
 		C20335DD157BDEC9003A6733 /* CircleSimpleCycleFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CircleSimpleCycleFinder.m; sourceTree = "<group>"; };
 		C23AF6EC1579162000D2DF2E /* CircleIVarLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CircleIVarLayout.h; sourceTree = "<group>"; };
@@ -49,15 +48,19 @@
 		C2A7A1BB154F50D200940C81 /* MAAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MAAppDelegate.h; sourceTree = "<group>"; };
 		C2A7A1BC154F50D200940C81 /* MAAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MAAppDelegate.m; sourceTree = "<group>"; };
 		C2A7A1BF154F50D300940C81 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		C2A7A1C6154F50D300940C81 /* CircleTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CircleTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2A7A1C7154F50D300940C81 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
-		C2A7A1CE154F50D300940C81 /* CircleTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CircleTests-Info.plist"; sourceTree = "<group>"; };
-		C2A7A1D0154F50D300940C81 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C2A7A1D2154F50D300940C81 /* CircleTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CircleTests.h; sourceTree = "<group>"; };
 		C2A7A1D3154F50D300940C81 /* CircleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CircleTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1F8FDCB3211CDD7400A76988 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C2A7A1A2154F50D200940C81 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -66,23 +69,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C2A7A1C2154F50D300940C81 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C2A7A1C8154F50D300940C81 /* SenTestingKit.framework in Frameworks */,
-				C2A7A1C9154F50D300940C81 /* Cocoa.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1F8FDCB7211CDD7400A76988 /* CircleTests */ = {
+			isa = PBXGroup;
+			children = (
+				C2A7A1D2154F50D300940C81 /* CircleTests.h */,
+				C2A7A1D3154F50D300940C81 /* CircleTests.m */,
+				1F8FDCBA211CDD7400A76988 /* Info.plist */,
+			);
+			path = CircleTests;
+			sourceTree = "<group>";
+		};
 		C2A7A19A154F50D200940C81 = {
 			isa = PBXGroup;
 			children = (
 				C2A7A1AF154F50D200940C81 /* Circle */,
-				C2A7A1CC154F50D300940C81 /* CircleTests */,
+				1F8FDCB7211CDD7400A76988 /* CircleTests */,
 				C2A7A1A8154F50D200940C81 /* Frameworks */,
 				C2A7A1A6154F50D200940C81 /* Products */,
 			);
@@ -92,7 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				C2A7A1A5154F50D200940C81 /* Circle.app */,
-				C2A7A1C6154F50D300940C81 /* CircleTests.octest */,
+				1F8FDCB6211CDD7400A76988 /* CircleTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -144,28 +148,27 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		C2A7A1CC154F50D300940C81 /* CircleTests */ = {
-			isa = PBXGroup;
-			children = (
-				C2A7A1D2154F50D300940C81 /* CircleTests.h */,
-				C2A7A1D3154F50D300940C81 /* CircleTests.m */,
-				C2A7A1CD154F50D300940C81 /* Supporting Files */,
-			);
-			path = CircleTests;
-			sourceTree = "<group>";
-		};
-		C2A7A1CD154F50D300940C81 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				C2A7A1CE154F50D300940C81 /* CircleTests-Info.plist */,
-				C2A7A1CF154F50D300940C81 /* InfoPlist.strings */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1F8FDCB5211CDD7400A76988 /* CircleTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F8FDCBD211CDD7400A76988 /* Build configuration list for PBXNativeTarget "CircleTests" */;
+			buildPhases = (
+				1F8FDCB2211CDD7400A76988 /* Sources */,
+				1F8FDCB3211CDD7400A76988 /* Frameworks */,
+				1F8FDCB4211CDD7400A76988 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1F8FDCBC211CDD7400A76988 /* PBXTargetDependency */,
+			);
+			name = CircleTests;
+			productName = CircleTests;
+			productReference = 1F8FDCB6211CDD7400A76988 /* CircleTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		C2A7A1A4154F50D200940C81 /* Circle */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C2A7A1D7154F50D300940C81 /* Build configuration list for PBXNativeTarget "Circle" */;
@@ -183,25 +186,6 @@
 			productReference = C2A7A1A5154F50D200940C81 /* Circle.app */;
 			productType = "com.apple.product-type.application";
 		};
-		C2A7A1C5154F50D300940C81 /* CircleTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C2A7A1DA154F50D300940C81 /* Build configuration list for PBXNativeTarget "CircleTests" */;
-			buildPhases = (
-				C2A7A1C1154F50D300940C81 /* Sources */,
-				C2A7A1C2154F50D300940C81 /* Frameworks */,
-				C2A7A1C3154F50D300940C81 /* Resources */,
-				C2A7A1C4154F50D300940C81 /* ShellScript */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				C2A7A1CB154F50D300940C81 /* PBXTargetDependency */,
-			);
-			name = CircleTests;
-			productName = CircleTests;
-			productReference = C2A7A1C6154F50D300940C81 /* CircleTests.octest */;
-			productType = "com.apple.product-type.bundle";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -211,6 +195,13 @@
 				CLASSPREFIX = MA;
 				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "Michael Ash";
+				TargetAttributes = {
+					1F8FDCB5211CDD7400A76988 = {
+						CreatedOnToolsVersion = 9.4.1;
+						ProvisioningStyle = Manual;
+						TestTargetID = C2A7A1A4154F50D200940C81;
+					};
+				};
 			};
 			buildConfigurationList = C2A7A19F154F50D200940C81 /* Build configuration list for PBXProject "Circle" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -225,12 +216,19 @@
 			projectRoot = "";
 			targets = (
 				C2A7A1A4154F50D200940C81 /* Circle */,
-				C2A7A1C5154F50D300940C81 /* CircleTests */,
+				1F8FDCB5211CDD7400A76988 /* CircleTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		1F8FDCB4211CDD7400A76988 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C2A7A1A3154F50D200940C81 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -241,33 +239,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C2A7A1C3154F50D300940C81 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C2A7A1D1154F50D300940C81 /* InfoPlist.strings in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		C2A7A1C4154F50D300940C81 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
+/* Begin PBXSourcesBuildPhase section */
+		1F8FDCB2211CDD7400A76988 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
+				1F8FDCC0211CDDD500A76988 /* CircleTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
 		};
-/* End PBXShellScriptBuildPhase section */
-
-/* Begin PBXSourcesBuildPhase section */
 		C2A7A1A1154F50D200940C81 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -279,21 +261,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C2A7A1C1154F50D300940C81 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C2A7A1D4154F50D300940C81 /* CircleTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		C2A7A1CB154F50D300940C81 /* PBXTargetDependency */ = {
+		1F8FDCBC211CDD7400A76988 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C2A7A1A4154F50D200940C81 /* Circle */;
-			targetProxy = C2A7A1CA154F50D300940C81 /* PBXContainerItemProxy */;
+			targetProxy = 1F8FDCBB211CDD7400A76988 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -322,17 +296,76 @@
 			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
-		C2A7A1CF154F50D300940C81 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C2A7A1D0154F50D300940C81 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		1F8FDCBE211CDD7400A76988 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = CircleTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mikeash.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Circle.app/Contents/MacOS/Circle";
+			};
+			name = Debug;
+		};
+		1F8FDCBF211CDD7400A76988 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = CircleTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mikeash.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Circle.app/Contents/MacOS/Circle";
+			};
+			name = Release;
+		};
 		C2A7A1D5154F50D300940C81 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -447,39 +480,18 @@
 			};
 			name = Release;
 		};
-		C2A7A1DB154F50D300940C81 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Circle.app/Contents/MacOS/Circle";
-				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Circle/Circle-Prefix.pch";
-				INFOPLIST_FILE = "CircleTests/CircleTests-Info.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mikeash.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = octest;
-			};
-			name = Debug;
-		};
-		C2A7A1DC154F50D300940C81 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Circle.app/Contents/MacOS/Circle";
-				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Circle/Circle-Prefix.pch";
-				INFOPLIST_FILE = "CircleTests/CircleTests-Info.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mikeash.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = octest;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1F8FDCBD211CDD7400A76988 /* Build configuration list for PBXNativeTarget "CircleTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F8FDCBE211CDD7400A76988 /* Debug */,
+				1F8FDCBF211CDD7400A76988 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C2A7A19F154F50D200940C81 /* Build configuration list for PBXProject "Circle" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -494,15 +506,6 @@
 			buildConfigurations = (
 				C2A7A1D8154F50D300940C81 /* Debug */,
 				C2A7A1D9154F50D300940C81 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		C2A7A1DA154F50D300940C81 /* Build configuration list for PBXNativeTarget "CircleTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C2A7A1DB154F50D300940C81 /* Debug */,
-				C2A7A1DC154F50D300940C81 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

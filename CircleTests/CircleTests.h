@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 Michael Ash. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface CircleTests : SenTestCase
+@interface CircleTests : XCTestCase
 
 @end

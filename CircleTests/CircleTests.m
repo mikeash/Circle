@@ -48,10 +48,10 @@
     }
     
     @autoreleasepool {
-        STAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
+        XCTAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
     }
     [collector collect];
-    STAssertNil(weakObj, @"Collector didn't collect a cycle");
+    XCTAssertNil(weakObj, @"Collector didn't collect a cycle");
 }
 
 - (void)testSingleObjectCycle
@@ -68,10 +68,10 @@
     }
     
     @autoreleasepool {
-        STAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
+        XCTAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
     }
     [collector collect];
-    STAssertNil(weakObj, @"Collector didn't collect a cycle");
+    XCTAssertNil(weakObj, @"Collector didn't collect a cycle");
 }
 
 - (void)testBlockCycle
@@ -89,10 +89,10 @@
     }
     
     @autoreleasepool {
-        STAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
+        XCTAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
     }
     [collector collect];
-    STAssertNil(weakObj, @"Collector didn't collect a cycle");
+    XCTAssertNil(weakObj, @"Collector didn't collect a cycle");
 }
 
 - (void)testComplexCycle
@@ -118,10 +118,10 @@
     }
     
     @autoreleasepool {
-        STAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
+        XCTAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
     }
     [collector collect];
-    STAssertNil(weakObj, @"Collector didn't collect a cycle");
+    XCTAssertNil(weakObj, @"Collector didn't collect a cycle");
 }
 
 - (void)testReachableCycle
@@ -142,10 +142,10 @@
     }
     
     @autoreleasepool {
-        STAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
+        XCTAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
     }
     [collector collect];
-    STAssertNotNil(weakObj, @"Collector collected a referenced cycle");
+    XCTAssertNotNil(weakObj, @"Collector collected a referenced cycle");
 }
 
 - (void)testNSObject
@@ -190,7 +190,7 @@
     
     @autoreleasepool {
         for(int i = 0; i < COUNT; i++)
-            STAssertNotNil(weakObjs[i], @"Weak pointer to cycle should not be nil before running the collector");
+            XCTAssertNotNil(weakObjs[i], @"Weak pointer to cycle should not be nil before running the collector");
     }
     
     for(int i = 0; i < COUNT; i++)
@@ -202,7 +202,7 @@
     }
     
     for(int i = 0; i < COUNT; i++)
-        STAssertNil(weakObjs[i], @"Collector failed to collect a cycle");
+        XCTAssertNil(weakObjs[i], @"Collector failed to collect a cycle");
 }
 
 - (void)testArrayCycle
@@ -220,10 +220,10 @@
     }
     
     @autoreleasepool {
-        STAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
+        XCTAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
     }
     [collector collect];
-    STAssertNil(weakObj, @"Collector didn't collect a cycle");
+    XCTAssertNil(weakObj, @"Collector didn't collect a cycle");
 }
 
 - (void)testSetCycle
@@ -241,10 +241,10 @@
     }
     
     @autoreleasepool {
-        STAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
+        XCTAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
     }
     [collector collect];
-    STAssertNil(weakObj, @"Collector didn't collect a cycle");
+    XCTAssertNil(weakObj, @"Collector didn't collect a cycle");
 }
 
 - (void)testDictionaryCycle
@@ -262,10 +262,10 @@
     }
     
     @autoreleasepool {
-        STAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
+        XCTAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
     }
     [collector collect];
-    STAssertNil(weakObj, @"Collector didn't collect a cycle");
+    XCTAssertNil(weakObj, @"Collector didn't collect a cycle");
 }
 
 - (void)test__blockReference
@@ -295,10 +295,10 @@
     }
     
     @autoreleasepool {
-        STAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
+        XCTAssertNotNil(weakObj, @"Weak pointer to cycle should not be nil before running the collector");
     }
     [collector collect];
-    STAssertNil(weakObj, @"Collector didn't collect a cycle");
+    XCTAssertNil(weakObj, @"Collector didn't collect a cycle");
 }
 
 @end
