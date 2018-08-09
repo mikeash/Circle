@@ -170,10 +170,17 @@ static NSIndexSet *CalculateClassStrongLayout(Class c)
 {
     // Fetch the selector for the ARC destructor.
     SEL destructorSEL = sel_getUid(".cxx_destruct");
+
+  // `@selector(doNotImplementThisItDoesNotExistReally)` doesn't exist, obviously. Let clang know we
+  // don't care so we don't get a warning.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
     
     // Fetch the IMP for the destructor. Also fetch the IMP for a known unimplemented selector.
     void (*Destruct)(void *, SEL) = (__typeof__(Destruct))class_getMethodImplementation(c, destructorSEL);
     void (*Forward)(void *, SEL) = (__typeof__(Forward))class_getMethodImplementation([NSObject class], @selector(doNotImplementThisItDoesNotExistReally));
+
+#pragma clang diagnostic pop
     
     // If the ARC destructor is not implemented (IMP equals that of an unimplemented selector)
     // then the class contains no strong references. We can just bail out now.
