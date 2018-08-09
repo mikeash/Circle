@@ -50,8 +50,25 @@ enum Classification
 
 
 // Dictionarys to cache the layout and classification of a class.
-static CFMutableDictionaryRef gLayoutCache;
-static CFMutableDictionaryRef gClassificationCache;
+
+static CFMutableDictionaryRef getClassificationCache() {
+    static CFMutableDictionaryRef gClassificationCache;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // When the layout cache doesn't exist, create it now. We'll be adding an entry.
+        gClassificationCache = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+    });
+    return gClassificationCache;
+}
+static CFMutableDictionaryRef getLayoutCache() {
+    static dispatch_once_t onceToken;
+    static CFMutableDictionaryRef gLayoutCache;
+    dispatch_once(&onceToken, ^{
+        // If the classification cache doesn't exist, create it.
+        gLayoutCache = CFDictionaryCreateMutable(NULL, 0, NULL, &kCFTypeDictionaryValueCallBacks);
+    });
+    return gLayoutCache;
+}
 
 
 // This class detects releases sent to it and makes that information available to
@@ -209,13 +226,12 @@ static NSIndexSet *CalculateClassStrongLayout(Class c)
 // Fetch the strong ivar layout for a class, pulling from the cache when possible.
 static NSIndexSet *GetClassStrongLayout(Class c)
 {
-    // If the layout cache doesn't exist, create it now. We'll be adding an entry.
-    if(!gLayoutCache)
-        gLayoutCache = CFDictionaryCreateMutable(NULL, 0, NULL, &kCFTypeDictionaryValueCallBacks);
-    
+
+    CFMutableDictionaryRef gLayoutCache = getLayoutCache();
+
     // Fetch the layout from the cache.
     NSIndexSet *layout = (__bridge NSIndexSet *)CFDictionaryGetValue(gLayoutCache, (__bridge void *)c);
-    
+
     // If the layout doesn't exist in the cache, then compute it and cache it.
     if(!layout)
     {
@@ -245,15 +261,13 @@ static NSIndexSet *GetBlockStrongLayout(void *block)
     
     void (*dispose_helper)(void *src) = descriptor->rest[1];
     
-    // If the layout cache doesn't exist, create it now. We'll add an entry to it.
-    if(!gLayoutCache)
-        gLayoutCache = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
-    
+  CFMutableDictionaryRef gLayoutCache = getLayoutCache();
+
     // See if the layout already exists. We can't use the block isa as a key, since different
     // blocks can share an isa. Instead, we use the address of the destructor function as the
     // key, since that destructor will always result in the same layout.
     NSIndexSet *layout = (__bridge NSIndexSet *)CFDictionaryGetValue(gLayoutCache, dispose_helper);
-    
+
     // If the layout doesn't exist in the cache, calculate it using this block's isa, the block's
     // size as pulled from its descriptor, and a destructor that just calls the block destructor.
     if(!layout)
@@ -270,9 +284,7 @@ static NSIndexSet *GetBlockStrongLayout(void *block)
 // Classify an object into one of the listed classifications.
 static enum Classification Classify(void *obj)
 {
-    // If the classification cache doesn't exist, create it.
-    if(!gClassificationCache)
-        gClassificationCache = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+    CFMutableDictionaryRef gClassificationCache = getClassificationCache();
     
     // Key classifications off the object's class.
     void *key = (__bridge void *)object_getClass((__bridge id)obj);
